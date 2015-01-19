@@ -16,7 +16,8 @@ import java.util.List;
  */
 public class WordlistModel extends AbstractWordlistModel implements Serializable
 {
-
+    private static final long serialVersionUID = 42L;
+    
     /**
      *
      */

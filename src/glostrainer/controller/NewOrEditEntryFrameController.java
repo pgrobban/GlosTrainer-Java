@@ -17,10 +17,16 @@ import javax.swing.SwingUtilities;
 // TODO: use SwingWorkers to safely open and close dialogs
 
 /**
- * This controller represents interactions for the user with the
- * NewOrEditEntryFrame, a dialog for entering a new word entry or editing an
- * existing one. The model here represents the entered data from the GUI's text
- * boxes (and combo box for the word class).
+ * This controller handles interactions for the user with the
+ * NewOrEditEntryFrame, a modal JDialog. 
+ * There are two modes for this form, either for adding a new word or for editing
+ * a word from an existing one. Since both cases deal with the same reference to
+ * the frame in the view, we modify that reference (set visibility to true/false,
+ * modify title and appropriate components) rather than creating new views
+ * every time the user chooses to enter a new word or edit a word.
+ * 
+ * The model here represents the entered data from the GUI's JTextFiedls (and 
+ * JComboBox for the word class etc).
  *
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
@@ -28,18 +34,21 @@ public class NewOrEditEntryFrameController
 {
 
     /**
-     *
+     * The model here represents the entered data from the GUI's JTextFiedls (and 
+     * JComboBox for the word class etc).
      */
     private final NewOrEditEntryModel model;
     /**
-     *
+     * The view contains a reference to a modal JDialog, which will be used
+     * for the user to enter and display data.
      */
     private final NewOrEditEntryFrame view;
     /**
-     * Sets a flag to determine if the word was saved, e.g. when the user has
-     * clicked the OK button.
+     * Sets a flag to determine if the word entry was saved, e.g. when the user has
+     * clicked the OK button. Use thhis flag to determine wether to update
+     * the model after the form has been closed or not.
      */
-    protected boolean wordWasSaved;
+    protected boolean wordEntryWasSaved;
 
     /**
      * Creates a new NewOrEditFrameController with the given model and view.
@@ -66,17 +75,20 @@ public class NewOrEditEntryFrameController
         view.getWordClassComboBox().addItemListener((ItemEvent e) ->
         {
             WordClass newSelectedWordClass = (WordClass) view.getWordClassComboBox().getSelectedItem();
-            this.getModel().setCurrentSelectedWordClass(newSelectedWordClass);
+            this.model.setCurrentSelectedWordClass(newSelectedWordClass);
             this.view.setWordClassSpecificOptionalFields(newSelectedWordClass);
             this.view.getFrame().pack();
         });
-        
+        // patch the JTextArea so the Tab button can be used to change focus
         LibHelpers.patchFocus(view.getUserNotesTextArea());
     }
-
-    public void openNewEntryFrame()
+    
+    /**
+     * Opens a form for the user to make a new WordEntry.
+     */
+    public void openNewEntryForm()
     {
-        this.wordWasSaved = false;
+        this.wordEntryWasSaved = false;
 
         JDialog frame = view.getFrame();
         frame.setTitle("New Entry");
@@ -93,21 +105,31 @@ public class NewOrEditEntryFrameController
         }
 
         frame.setVisible(true);
-
     }
-
-    public void closeFrame()
+    
+    /**
+     * Closes the frame. The method does not modify the <code>wordEntryWasSaved</code> 
+     * flag.
+     */
+    public void closeForm()
     {
         SwingUtilities.invokeLater(() ->
         {
             view.getFrame().setVisible(false);
         });
     }
-
+    
+    /**
+     * Opens the form in edit mode. This means that its componentss for user
+     * entry will be pre-populated from the fields of the given word,
+     * e.g.  the Swedish dictionary form text field will be set to the value returned by
+     * <code>wordToEdit.getDictionaryFormField()</code>.
+     * @param wordToEdit the word to edit.
+     */
     public void openEditEntryFrame(WordEntry wordToEdit)
     {
         System.out.println("Opening Edit Entry Frame with " + wordToEdit);
-        this.wordWasSaved = false;
+        this.wordEntryWasSaved = false;
 
         JDialog frame = view.getFrame();
         frame.setTitle("Edit Entry");
@@ -135,15 +157,57 @@ public class NewOrEditEntryFrameController
         return (!this.view.getDictionaryFormField().getText().trim().equals("")
                 && !this.view.getDefinitionField().getText().trim().equals(""));
     }
-
+    
     /**
-     * @return the model
+     * Pass-through method to retrieve the saved word entry in WordlistFrameController.
+     * @return the current WordEntry
      */
-    public NewOrEditEntryModel getModel()
+    protected WordEntry getCurrentWordEntry()
     {
-        return model;
+        return this.model.getCurrentWord();
     }
-
+    
+    
+    /**
+     * Retrieves the user-entered values from the view, and sets the saved word
+     * in the model to a word entry with the corresponding fields. Text entry
+     * values will be trimmed.
+     */
+    public void saveWordEntry()
+    {
+        model.setCurrentWord(new WordEntry(
+                model.getCurrentSelectedWordClass(), 
+                view.getDictionaryFormField().getText().trim(),
+                view.getDefinitionField().getText().trim(),
+                this.getOptionalFieldTexts(),
+                view.getUserNotesTextArea().getText().trim()
+        ));
+    }
+    
+    /**
+     * Retrieves an array of <code>String</code> consisting of  all of the 
+     * values from user-entered text fields in the optional forms panel
+     * of the view. 
+     * The values are trimmed, and a field left blank in the form will correspond 
+     * to an empty string in the array.
+     * @return an array of <code>String</code>s with all the user-entered optional forms
+     */
+    private String[] getOptionalFieldTexts()
+    {
+        JTextField[] fields = view.getOptionalFormTextFields();
+        String[] result = new String[fields.length];
+        for (int i = 0; i < fields.length; i++)
+        {
+            result[i] = fields[i].getText().trim();
+        }
+        return result;
+    }
+    
+    /**
+     * When the OKButtonAction is invoked, validate the form. If it is valid,
+     * set the <code>wordEntryWasSaved</code> to true and close the form. 
+     * If it is not valid, we display an error message to the user and do nothing else.
+     */
     private class OkButtonAction extends AbstractAction
     {
 
@@ -158,9 +222,9 @@ public class NewOrEditEntryFrameController
         {
             if (isEntryValid())
             {
-                saveWord();
-                wordWasSaved = true;
-                closeFrame();
+                saveWordEntry();
+                wordEntryWasSaved = true;
+                closeForm();
             } else
             {
                 SwingUtilities.invokeLater(() ->
@@ -170,39 +234,17 @@ public class NewOrEditEntryFrameController
                             "Error",
                             JOptionPane.ERROR_MESSAGE);
                 });
-
             }
         }
-
+    
     }
-
-    public void saveWord()
-    {
-        WordEntry savedWord = model.getCurrentWord();
-
-        savedWord.setWordClass(model.getCurrentSelectedWordClass());
-        savedWord.setSwedishDictionaryForm(view.getDictionaryFormField().getText().trim());
-        savedWord.setDefinition(view.getDefinitionField().getText().trim());
-        savedWord.setOptionalForms(getOptionalFieldTexts());
-        savedWord.setUserNotes(view.getUserNotesTextArea().getText());
-
-        //System.out.println(model.getCurrentWord());
-    }
-
-    private String[] getOptionalFieldTexts()
-    {
-        JTextField[] fields = view.getOptionalFormTextFields();
-        String[] result = new String[fields.length];
-        for (int i = 0; i < fields.length; i++)
-        {
-            result[i] = fields[i].getText().trim();
-        }
-        return result;
-    }
-
+    
+    /**
+     * When the CancelButtonAction is performed, we close the form without saving.
+     */
     private class CancelButtonAction extends AbstractAction
     {
-
+        
         public CancelButtonAction()
         {
             super("Cancel", LibHelpers.getIconFromFileName("delete.png"));
@@ -212,8 +254,9 @@ public class NewOrEditEntryFrameController
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            NewOrEditEntryFrameController.this.view.getFrame().setVisible(false);
+            closeForm();
         }
+        
     }
 
 }

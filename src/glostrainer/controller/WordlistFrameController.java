@@ -305,10 +305,10 @@ public class WordlistFrameController
 
     public void openNewEntryFrame()
     {
-        this.newOrEditEntryFrameController.openNewEntryFrame();
-        if (this.newOrEditEntryFrameController.wordWasSaved)
+        this.newOrEditEntryFrameController.openNewEntryForm();
+        if (this.newOrEditEntryFrameController.wordEntryWasSaved)
         {
-            WordEntry savedWord = this.newOrEditEntryFrameController.getModel().getCurrentWord();
+            WordEntry savedWord = this.newOrEditEntryFrameController.getCurrentWordEntry();
             WordEntry wordToAdd = new WordEntry(
                     savedWord.getWordClass(),
                     savedWord.getSwedishDictionaryForm(),
@@ -347,9 +347,9 @@ public class WordlistFrameController
         int selectedIndexInModel = view.getWordlistTable().convertRowIndexToModel(selectedIndexInView);
         
         this.newOrEditEntryFrameController.openEditEntryFrame(this.model.getWordAtIndex(selectedIndexInModel));
-        if (this.newOrEditEntryFrameController.wordWasSaved)
+        if (this.newOrEditEntryFrameController.wordEntryWasSaved)
         {
-            WordEntry savedWord = this.newOrEditEntryFrameController.getModel().getCurrentWord();
+            WordEntry savedWord = this.newOrEditEntryFrameController.getCurrentWordEntry();
             this.model.replaceWordAtIndex(selectedIndexInModel, savedWord);
 
             // edit table entry

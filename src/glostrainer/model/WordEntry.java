@@ -19,6 +19,9 @@ public class WordEntry implements Serializable
     
     private String userNotes;
     
+    private static final long serialVersionUID = 42L;
+
+    
     public WordEntry()
     {
         this(WordClass.NOUN, "", "", new String[0], "");
