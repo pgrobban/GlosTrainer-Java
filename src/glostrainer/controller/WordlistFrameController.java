@@ -21,6 +21,9 @@ import java.awt.print.PrinterException;
 import java.io.File;
 import java.io.IOException;
 import java.text.Collator;
+import java.text.ParseException;
+import java.text.RuleBasedCollator;
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,46 +42,48 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 /**
- * In the MVC pattern, the controller facilitates the communication between the 
+ * In the MVC pattern, the controller facilitates the communication between the
  * user and the application. This class represents the main controller for the
- * application.
- * It manages a GUI, which here is an instance of a <code>WordlistFrame</code>, and
- * a word list model class, <code>WordlistModel</code>.
- * The <code>WordlistFrameController</code> responds to GUI events such as button
- * clicks and key presses, and reacts accordingly.
+ * application. It manages a GUI, which here is an instance of a
+ * <code>WordlistFrame</code>, and a word list model class,
+ * <code>WordlistModel</code>. The <code>WordlistFrameController</code> responds
+ * to GUI events such as button clicks and key presses, and reacts accordingly.
  * Since the table view in the GUI cannot be manipulated directly, the
  * <code>WordListFrameController</code> class manages a
  * <code>NewOrEditEntryFrameController</code> instance to show dialogs for the
  * user to create or edit word entries.
- * 
+ *
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
 public class WordlistFrameController
 {
-    /**  
+
+    /**
      * Since the table view in the GUI cannot be manipulated directly, the
      * <code>WordListFrameController</code> class manages a
-     * <code>NewOrEditEntryFrameController</code> instance to manipulate dialogs for the
-     * user to create or edit word entries.
+     * <code>NewOrEditEntryFrameController</code> instance to manipulate dialogs
+     * for the user to create or edit word entries.
      */
     private NewOrEditEntryFrameController newOrEditEntryFrameController;
-    
+
     /**
-     * 
+     *
      */
     private WordlistModel model;
-    
+
     /**
-     * 
+     *
      */
     private WordlistFrame view;
 
     /**
      * Creates a new WordlistFrameController with the given model and view.
+     *
      * @param model
      * @param view
      */
@@ -111,7 +116,7 @@ public class WordlistFrameController
             {
                 int result = JOptionPane.showConfirmDialog(view.getFrame(),
                         "Do you really want to close the application? All unsaved changes will be lost.",
-                        "Save",
+                        "Exit",
                         JOptionPane.WARNING_MESSAGE);
                 if (result == JOptionPane.YES_OPTION)
                 {
@@ -179,12 +184,34 @@ public class WordlistFrameController
         });
         this.view.getWordlistTable().addMouseListener(new WordlistTableMouseListener());
 
+        /* 
+         We need to force Swedish sorting on the table in case the user does not run
+         a system with the Swedish locale set (which is most likely the case for this 
+         intended target group of this application. 
+         The Swedish alphabet consists of the letters A-Z as in English, followed by
+         Å (A with a ring above), Ä (A with two dots above) and Ö (O with two dots above),
+         in this particular order. 
+         For the sorting, we don't care about the cases of the letters.
+         */
         TableRowSorter<TableModel> sorter = new TableRowSorter<>(view.getWordlistTable().getModel());
-        sorter.setComparator(DEFINITION_COLUMN, (String o1, String o2) ->
+        try
         {
-            Collator collator = Collator.getInstance(new Locale("sv", ""));
-            return collator.compare(o1, o2);
-        });
+            String rules = "< a < å < ä < ö";
+            final RuleBasedCollator ruleBasedCollator = new RuleBasedCollator(rules);
+            Comparator<String> swedishComparator = (String o1, String o2) ->
+            {
+                return ruleBasedCollator.compare(o1.toLowerCase(), o2.toLowerCase());
+            };
+            for (int i = 0; i < view.getWordlistTable().getColumnCount(); i++)
+            {
+                sorter.setComparator(i, swedishComparator);
+            }
+
+        } catch (ParseException ex)
+        {
+            Logger.getLogger(WordlistFrameController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         view.getWordlistTable().setRowSorter(sorter);
 
         RowFilter<TableModel, Integer> rf = new RowFilter()
@@ -309,22 +336,28 @@ public class WordlistFrameController
 
     /**
      *
-     * @param selectedIndex
+     * @param selectedIndexInView
      */
-    public void openEditEntryFrameWithWordAtSelectedIndex(int selectedIndex)
+    public void openEditEntryFrameWithWordAtSelectedIndex(int selectedIndexInView)
     {
-        this.newOrEditEntryFrameController.openEditEntryFrame(this.model.getWordAtIndex(selectedIndex));
+        /*
+         If the user has sorted or filtered the table, we need to convert the selected
+         index from the view to the corresponding index in the model.
+         */
+        int selectedIndexInModel = view.getWordlistTable().convertRowIndexToModel(selectedIndexInView);
+        
+        this.newOrEditEntryFrameController.openEditEntryFrame(this.model.getWordAtIndex(selectedIndexInModel));
         if (this.newOrEditEntryFrameController.wordWasSaved)
         {
             WordEntry savedWord = this.newOrEditEntryFrameController.getModel().getCurrentWord();
-            this.model.replaceWordAtIndex(selectedIndex, savedWord);
+            this.model.replaceWordAtIndex(selectedIndexInModel, savedWord);
 
             // edit table entry
             DefaultTableModel tableModel = (DefaultTableModel) view.getWordlistTable().getModel();
-            tableModel.setValueAt(savedWord.getSwedishDictionaryForm(), selectedIndex, WordlistFrame.SWEDISH_DICTIONARY_FORM_COLUMN);
-            tableModel.setValueAt(savedWord.getDefinition(), selectedIndex, WordlistFrame.DEFINITION_COLUMN);
-            tableModel.setValueAt(savedWord.getWordClass(), selectedIndex, WordlistFrame.WORD_CLASS_COLUMN);
-            tableModel.setValueAt(savedWord.getOptionalFormsAsString(), selectedIndex, WordlistFrame.OPTIONAL_FORMS_COLUMN);
+            tableModel.setValueAt(savedWord.getSwedishDictionaryForm(), selectedIndexInModel, WordlistFrame.SWEDISH_DICTIONARY_FORM_COLUMN);
+            tableModel.setValueAt(savedWord.getDefinition(), selectedIndexInModel, WordlistFrame.DEFINITION_COLUMN);
+            tableModel.setValueAt(savedWord.getWordClass(), selectedIndexInModel, WordlistFrame.WORD_CLASS_COLUMN);
+            tableModel.setValueAt(savedWord.getOptionalFormsAsString(), selectedIndexInModel, WordlistFrame.OPTIONAL_FORMS_COLUMN);
         }
     }
 
@@ -346,15 +379,7 @@ public class WordlistFrameController
             JOptionPane.showMessageDialog(this.view.getFrame(), "Please only select one row to edit.", "", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        /*
-         OK, the user has only selected one row. But we need to be careful here. if the 
-         user selects a row to edit in the view (the table), it might not correspond 
-         to the correct item in the model if the table has been sorted or filtered, so we need to 
-         convert the user's selected index to the model's index.
-         */
-        int selectedIndexInModel = wordListTable.convertRowIndexToModel(selectedTableRowIndicesInView[0]);
-        // now we can open the edit frame
-        openEditEntryFrameWithWordAtSelectedIndex(selectedIndexInModel);
+        openEditEntryFrameWithWordAtSelectedIndex(selectedTableRowIndicesInView[0]);
     }
 
     public void tryDeleteEntries()
@@ -513,7 +538,6 @@ public class WordlistFrameController
             Logger.getLogger(WordlistFrameController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
 
     /**
      *

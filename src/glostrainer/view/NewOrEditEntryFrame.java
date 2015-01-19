@@ -213,7 +213,7 @@ public class NewOrEditEntryFrame
         optionalFieldsLayout.setAutoCreateGaps(true);
         optionalFieldsLayout.setAutoCreateContainerGaps(true);
 
-        String[] optionalWordForms = currentWordClass.getWordForms();
+        String[] optionalWordForms = currentWordClass.getOptionalForms();
         JLabel[] optionalWordFormsLabels = new JLabel[optionalWordForms.length];
         JTextField[] optionalWordFormsTextFields = new JTextField[optionalWordForms.length];
         for (int i = 0; i < optionalWordForms.length; i++)

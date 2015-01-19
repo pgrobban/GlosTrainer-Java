@@ -14,33 +14,38 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+// TODO: use SwingWorkers to safely open and close dialogs
+
 /**
- * This controller represents interactions for the user with the NewOrEditEntryFrame,
- * a dialog for entering a new word entry or editing an existing one.
- * The model here represents the entered data from the GUI's text boxes (and combo box
- * for the word class). 
+ * This controller represents interactions for the user with the
+ * NewOrEditEntryFrame, a dialog for entering a new word entry or editing an
+ * existing one. The model here represents the entered data from the GUI's text
+ * boxes (and combo box for the word class).
+ *
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
 public class NewOrEditEntryFrameController
 {
+
     /**
-     * 
+     *
      */
     private final NewOrEditEntryModel model;
     /**
-     * 
+     *
      */
     private final NewOrEditEntryFrame view;
     /**
      * Sets a flag to determine if the word was saved, e.g. when the user has
-     * clicked the OK button. 
+     * clicked the OK button.
      */
     protected boolean wordWasSaved;
-    
+
     /**
      * Creates a new NewOrEditFrameController with the given model and view.
+     *
      * @param model
-     * @param view 
+     * @param view
      */
     public NewOrEditEntryFrameController(NewOrEditEntryModel model, NewOrEditEntryFrame view)
     {
@@ -49,10 +54,14 @@ public class NewOrEditEntryFrameController
         initComponents();
     }
 
+    /**
+     * Initializes the components' actions and requests focus for the dictionary
+     * form text field.
+     */
     private void initComponents()
     {
         view.getOkButton().setAction(new OkButtonAction());
-        view.getOkButton().requestFocus();
+        view.getDictionaryFormField().requestFocus();;
         view.getCancelButton().setAction(new CancelButtonAction());
         view.getWordClassComboBox().addItemListener((ItemEvent e) ->
         {
@@ -61,13 +70,14 @@ public class NewOrEditEntryFrameController
             this.view.setWordClassSpecificOptionalFields(newSelectedWordClass);
             this.view.getFrame().pack();
         });
+        
+        LibHelpers.patchFocus(view.getUserNotesTextArea());
     }
 
     public void openNewEntryFrame()
     {
         this.wordWasSaved = false;
-        //SwingUtilities.invokeLater(() ->
-        //{
+
         JDialog frame = view.getFrame();
         frame.setTitle("New Entry");
         frame.setLocationRelativeTo(null);
@@ -81,7 +91,7 @@ public class NewOrEditEntryFrameController
         {
             optionalField.setText("");
         }
-        //});
+
         frame.setVisible(true);
 
     }
@@ -112,13 +122,18 @@ public class NewOrEditEntryFrameController
         {
             view.getOptionalFormTextFields()[i].setText(wordToEdit.getOptionalForms()[i]);
         }
-        frame.setVisible(true);
+        view.getFrame().setVisible(true);
     }
-
+    
+    /**
+     * Validates the form entries. The form is considered valid if the user has entered
+     * at least a non-empty dictionary form and a definition for the word.
+     * @return true if the entry is valid, otherwise false
+     */
     public boolean isEntryValid()
     {
-        return (!this.view.getDictionaryFormField().getText().equals("")
-                && !this.view.getDefinitionField().getText().equals(""));
+        return (!this.view.getDictionaryFormField().getText().trim().equals("")
+                && !this.view.getDefinitionField().getText().trim().equals(""));
     }
 
     /**
@@ -164,7 +179,7 @@ public class NewOrEditEntryFrameController
     public void saveWord()
     {
         WordEntry savedWord = model.getCurrentWord();
-        
+
         savedWord.setWordClass(model.getCurrentSelectedWordClass());
         savedWord.setSwedishDictionaryForm(view.getDictionaryFormField().getText().trim());
         savedWord.setDefinition(view.getDefinitionField().getText().trim());

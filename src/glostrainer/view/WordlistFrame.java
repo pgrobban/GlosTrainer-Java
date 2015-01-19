@@ -24,8 +24,6 @@ public class WordlistFrame
     public static int WORD_CLASS_COLUMN = 2;
     public static int OPTIONAL_FORMS_COLUMN = 3;
 
-    private boolean filterMode = false;
-
     public WordlistFrame()
     {
         SwingUtilities.invokeLater(() ->
@@ -162,7 +160,7 @@ public class WordlistFrame
 
         getWordlistTable().setRowSelectionAllowed(true);
         getWordlistTable().setToolTipText(TABLE_TOOLTIP);
-        getWordlistTable().setModel(new javax.swing.table.DefaultTableModel(
+        getWordlistTable().setModel(new DefaultTableModel(
                 new Object[][]
                 {
                 },
