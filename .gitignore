@@ -1,3 +1,5 @@
 build/*
 dist/*
 manifest.mf
+.gitignore
+build.xml
