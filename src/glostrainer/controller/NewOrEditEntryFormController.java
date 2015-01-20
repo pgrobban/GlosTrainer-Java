@@ -4,7 +4,7 @@ import glostrainer.LibHelpers;
 import glostrainer.model.NewOrEditEntryModel;
 import glostrainer.model.WordEntry;
 import glostrainer.model.WordClass;
-import glostrainer.view.NewOrEditEntryFrame;
+import glostrainer.view.NewOrEditEntryForm;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import javax.swing.AbstractAction;
@@ -18,7 +18,7 @@ import javax.swing.SwingUtilities;
 
 /**
  * This controller handles interactions for the user with the
- * NewOrEditEntryFrame, a modal JDialog. 
+ NewOrEditEntryForm, a modal JDialog. 
  * There are two modes for this form, either for adding a new word or for editing
  * a word from an existing one. Since both cases deal with the same reference to
  * the frame in the view, we modify that reference (set visibility to true/false,
@@ -30,7 +30,7 @@ import javax.swing.SwingUtilities;
  *
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
-public class NewOrEditEntryFrameController
+public class NewOrEditEntryFormController
 {
 
     /**
@@ -42,7 +42,7 @@ public class NewOrEditEntryFrameController
      * The view contains a reference to a modal JDialog, which will be used
      * for the user to enter and display data.
      */
-    private final NewOrEditEntryFrame view;
+    private final NewOrEditEntryForm view;
     /**
      * Sets a flag to determine if the word entry was saved, e.g. when the user has
      * clicked the OK button. Use thhis flag to determine wether to update
@@ -56,7 +56,7 @@ public class NewOrEditEntryFrameController
      * @param model
      * @param view
      */
-    public NewOrEditEntryFrameController(NewOrEditEntryModel model, NewOrEditEntryFrame view)
+    public NewOrEditEntryFormController(NewOrEditEntryModel model, NewOrEditEntryForm view)
     {
         this.model = model;
         this.view = view;

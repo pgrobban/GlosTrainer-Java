@@ -27,6 +27,12 @@ public class WordEntry implements Serializable
         this(WordClass.NOUN, "", "", new String[0], "");
     }
     
+    // copy constructor
+    public WordEntry(WordEntry copy)
+    {
+        this(copy.wordClass, copy.swedishDictionaryForm, copy.definition, copy.optionalForms, copy.userNotes);
+    }
+    
     public WordEntry(WordClass wordClass, String swedishDictionaryForm, 
             String definition, String[] optionalForms, String userNotes)
     {

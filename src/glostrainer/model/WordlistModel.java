@@ -9,6 +9,9 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 /**
  *
@@ -16,8 +19,9 @@ import java.util.List;
  */
 public class WordlistModel extends AbstractWordlistModel implements Serializable
 {
+
     private static final long serialVersionUID = 42L;
-    
+
     /**
      *
      */
@@ -33,9 +37,10 @@ public class WordlistModel extends AbstractWordlistModel implements Serializable
     @Override
     public void addWord(WordEntry word)
     {
-        System.out.println("Adding word to list " + word);
+        Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Adding word to list: {0}", word);
         wordList.add(word);
-        printListInfo();
+        Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Word list now has {0} entries remaining", getWordCount());
+
     }
 
     /**
@@ -46,9 +51,17 @@ public class WordlistModel extends AbstractWordlistModel implements Serializable
     @Override
     public WordEntry getWordAtIndex(int index)
     {
-        WordEntry w = wordList.get(index);
-        System.out.println("Getting word " + w);
-        return w;
+        WordEntry word = wordList.get(index);
+        Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Getting word from index {0}: {1}", new Object[]
+        {
+            index, word
+        });
+        return word;
+    }
+
+    public Stream<WordEntry> getAllWordsAsStream()
+    {
+        return wordList.stream();
     }
 
     /**
@@ -59,9 +72,12 @@ public class WordlistModel extends AbstractWordlistModel implements Serializable
     @Override
     public void replaceWordAtIndex(int index, WordEntry word)
     {
-        System.out.println("Replacing word at index " + index);
+        Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Replacing word at index {0}", index);
         wordList.set(index, word);
-        System.out.println("New word at index " + index + " is: " + wordList.get(index));
+        Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Replacing word at index {0} is {1}: ", new Object[]
+        {
+            index, word
+        });
     }
 
     /**
@@ -71,8 +87,12 @@ public class WordlistModel extends AbstractWordlistModel implements Serializable
     @Override
     public void removeWordAtIndex(int index)
     {
-        System.out.println("Deleting word at index " + index + ", which is" + this.wordList.get(index));
-        wordList.remove(index);
+        WordEntry wordToRemove = wordList.remove(index);
+        Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Deleting word at index {0}, which is {1}: ", new Object[]
+        {
+            index, wordToRemove
+        });
+        Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Word list now has {0} entries left ", this.getWordCount());
     }
 
     public void removeAllWords()
@@ -83,7 +103,7 @@ public class WordlistModel extends AbstractWordlistModel implements Serializable
     public static WordlistModel loadFromFile(File file) throws IOException, ClassNotFoundException
     {
         ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
-        List wordList = (ArrayList)in.readObject();
+        List wordList = (ArrayList) in.readObject();
         WordlistModel m = new WordlistModel();
         m.wordList = wordList;
         return m;
@@ -92,19 +112,8 @@ public class WordlistModel extends AbstractWordlistModel implements Serializable
     public void saveToFile(File file) throws IOException
     {
         ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
-        printListInfo();
         out.writeObject(wordList);
         out.close();
     }
-    
-    private void printListInfo()
-    {
-        System.out.println("Wordlist has " + getWordCount() + " entries");
-        wordList.stream().forEach((w) ->
-        {
-            System.out.println(w);
-        });
-    }
-
 
 }

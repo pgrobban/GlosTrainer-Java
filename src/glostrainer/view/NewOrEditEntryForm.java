@@ -13,7 +13,7 @@ import javax.swing.GroupLayout.SequentialGroup;
  *
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
-public class NewOrEditEntryFrame
+public class NewOrEditEntryForm
 {
 
     private final JDialog dialog;
@@ -23,7 +23,7 @@ public class NewOrEditEntryFrame
      * dialog to the given JFrame (presumably from the NewOrEditEntryFrame class).
      * @param ownerFrame 
      */
-    public NewOrEditEntryFrame(JFrame ownerFrame)
+    public NewOrEditEntryForm(JFrame ownerFrame)
     {
         dialog = new JDialog(ownerFrame, true);
         dialog.setAlwaysOnTop(true);

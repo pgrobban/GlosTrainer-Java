@@ -13,7 +13,7 @@ public class WordlistFrame
 {
 
     private JFrame frame;
-    private NewOrEditEntryFrame newEditFrame;
+    private NewOrEditEntryForm newEditFrame;
 
     private static final String TABLE_TOOLTIP = "<html>Click the <i>New Entry</i> button or double-click on the empty row to add a new entry.<br/>"
             + "To edit an entry, double-click on the corresponding row or select the row with your mouse or keyboard and click the <i>Edit Entry</i> button.</html>";
@@ -41,7 +41,7 @@ public class WordlistFrame
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JDesktopPane desktop = new JDesktopPane();
-        newEditFrame = new NewOrEditEntryFrame(frame);
+        newEditFrame = new NewOrEditEntryForm(frame);
         //desktop.add(newEditFrame.getFrame());
         frame.setContentPane(desktop);
 
