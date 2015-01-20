@@ -1,7 +1,7 @@
 package glostrainer.model;
 
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.LinkedHashMap;
 
 /**
  *
@@ -15,16 +15,22 @@ public class WordEntry implements Serializable
     
     private String definition;
     
-    private String[] optionalForms;
+    /**
+     * Use a <code>Map</code> to store the optional forms as a key-value pair where the
+     * key is the form name and the value is the value of that form for this word.
+     * We also need to preserve insertion order to make sure the mapping in the text
+     * fields are correct, so a <code>LinkedHashMap</code> should be good for this purpose.
+     */
+    private LinkedHashMap<String, String>optionalForms;
     
     private String userNotes;
     
-    private static final long serialVersionUID = 42L;
+    private static final long serialVersionUID = 43L;
 
     
     public WordEntry()
     {
-        this(WordClass.NOUN, "", "", new String[0], "");
+        this(WordClass.NOUN, "", "", new LinkedHashMap<>(), "");
     }
     
     // copy constructor
@@ -34,7 +40,7 @@ public class WordEntry implements Serializable
     }
     
     public WordEntry(WordClass wordClass, String swedishDictionaryForm, 
-            String definition, String[] optionalForms, String userNotes)
+            String definition, LinkedHashMap<String, String> optionalForms, String userNotes)
     {
         this.wordClass = wordClass;
         this.swedishDictionaryForm = swedishDictionaryForm;
@@ -50,7 +56,7 @@ public class WordEntry implements Serializable
                 this.wordClass, 
                 this.swedishDictionaryForm, 
                 this.definition,
-                Arrays.toString(optionalForms),
+                this.optionalForms.toString(),
                 this.getOptionalFormsAsString(),
                 this.userNotes);
     }
@@ -106,7 +112,7 @@ public class WordEntry implements Serializable
     /**
      * @return the optionalForms
      */
-    public String[] getOptionalForms()
+    public LinkedHashMap<String, String> getOptionalForms()
     {
         return optionalForms;
     }
@@ -114,9 +120,11 @@ public class WordEntry implements Serializable
     public String getOptionalFormsAsString()
     {
         StringBuilder output = new StringBuilder("");
-        for (String s : this.optionalForms)
-            if (s != null && s.length() > 0)
-                output.append(s).append(", ");
+        this.optionalForms.values().stream().filter((s) -> (s != null && s.length() > 0)).forEach((s) ->
+        {
+            output.append(s).append(", ");
+        });
+        // we want to remove the last comma and space, but we need to make sure there actually are
         if (output.length() > 1)
             output.setLength(output.length()-2);
         return output.toString();
@@ -125,7 +133,7 @@ public class WordEntry implements Serializable
     /**
      * @param optionalForms the optionalForms to set
      */
-    public void setOptionalForms(String[] optionalForms)
+    public void setOptionalForms(LinkedHashMap<String, String> optionalForms)
     {
         this.optionalForms = optionalForms;
     }

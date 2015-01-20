@@ -455,6 +455,7 @@ public class WordlistFrameController
         {
             WordEntry savedWord = this.newOrEditEntryFormController.getCurrentWordEntry();
             this.model.replaceWordAtIndex(selectedIndexInModel, savedWord);
+            System.out.println("Got word " + savedWord);
 
             // edit table entry
             DefaultTableModel tableModel = (DefaultTableModel) view.getWordlistTable().getModel();
@@ -475,7 +476,7 @@ public class WordlistFrameController
      * view). If zero, or more than one row are selected, display error messages
      * to the user and do nothing. The request to open the Edit Entry form is
      * done by invoking the
-     * <oce>openEditEntryFormWithWordAtSelectedIndex()</code> method.
+     * <code>openEditEntryFormWithWordAtSelectedIndex()</code> method.
      */
     public void tryOpenEditEntryForm()
     {
@@ -639,7 +640,7 @@ public class WordlistFrameController
                 {
                     clearEntries();
                     model = WordlistModel.loadFromFile(chooser.getSelectedFile());
-                    Logger.getLogger(WordlistFrame.class.getName()).log(Level.INFO, "Loaded file with " + model.getWordCount() + " words.");
+                    Logger.getLogger(WordlistFrame.class.getName()).log(Level.INFO, "Loaded file with {0} words.", model.getWordCount());
                     populateTableFromModel();
                 }
             } catch (IOException | ClassNotFoundException ex) // we didn't get a valid file

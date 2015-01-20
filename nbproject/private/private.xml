@@ -8,12 +8,12 @@
             <file>file:/Users/pgrobban/NetBeansProjects/GlosTrainer/src/glostrainer/Main.java</file>
             <file>file:/Users/pgrobban/NetBeansProjects/GlosTrainer/src/glostrainer/LibHelpers.java</file>
             <file>file:/Users/pgrobban/NetBeansProjects/GlosTrainer/src/glostrainer/controller/WordlistFrameController.java</file>
+            <file>file:/Users/pgrobban/NetBeansProjects/GlosTrainer/src/glostrainer/view/NewOrEditEntryForm.java</file>
             <file>file:/Users/pgrobban/NetBeansProjects/GlosTrainer/src/glostrainer/model/WordClass.java</file>
+            <file>file:/Users/pgrobban/NetBeansProjects/GlosTrainer/src/glostrainer/controller/NewOrEditEntryFormController.java</file>
             <file>file:/Users/pgrobban/NetBeansProjects/GlosTrainer/src/glostrainer/model/WordlistModel.java</file>
-            <file>file:/Users/pgrobban/NetBeansProjects/GlosTrainer/src/glostrainer/controller/NewOrEditEntryFrameController.java</file>
             <file>file:/Users/pgrobban/NetBeansProjects/GlosTrainer/src/glostrainer/model/WordEntry.java</file>
             <file>file:/Users/pgrobban/NetBeansProjects/GlosTrainer/src/glostrainer/view/CustomTitledBorder.java</file>
-            <file>file:/Users/pgrobban/NetBeansProjects/GlosTrainer/src/glostrainer/view/NewOrEditEntryFrame.java</file>
             <file>file:/Users/pgrobban/NetBeansProjects/GlosTrainer/src/glostrainer/model/AbstractWordlistModel.java</file>
         </group>
     </open-files>

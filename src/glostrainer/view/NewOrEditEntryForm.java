@@ -4,6 +4,7 @@ import glostrainer.model.WordClass;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.GroupLayout.ParallelGroup;
@@ -17,11 +18,13 @@ public class NewOrEditEntryForm
 {
 
     private final JDialog dialog;
-    
+
     /**
      * Creates a NewOrEditEntryFrame which is overlaid and acts as a modal
-     * dialog to the given JFrame (presumably from the NewOrEditEntryFrame class).
-     * @param ownerFrame 
+     * dialog to the given JFrame (presumably from the NewOrEditEntryFrame
+     * class).
+     *
+     * @param ownerFrame
      */
     public NewOrEditEntryForm(JFrame ownerFrame)
     {
@@ -30,7 +33,7 @@ public class NewOrEditEntryForm
 
         initComponents();
         initLayout();
-        
+
         dialog.pack();
     }
 
@@ -72,7 +75,7 @@ public class NewOrEditEntryForm
     private void initLayout()
     {
         initMainLayout();
-        
+
         initMandatoryFieldsLayout();
         setWordClassSpecificOptionalFields(WordClass.NOUN);
 
@@ -83,7 +86,7 @@ public class NewOrEditEntryForm
     private void initMainLayout()
     {
         GroupLayout mainLayout = new GroupLayout(dialog.getContentPane());
-        
+
         optionalFieldsScrollPane = new JScrollPane(optionalFieldsPanel);
         optionalFieldsScrollPane.setBorder(new CustomTitledBorder("Optional fields"));
         optionalFieldsScrollPane.setPreferredSize(new Dimension(400, 200));
@@ -126,7 +129,7 @@ public class NewOrEditEntryForm
     private void initUserNotesLayout()
     {
         userNotesPanel.setBorder(new CustomTitledBorder("My notes"));
-        
+
         GroupLayout userNotesLayout = new GroupLayout(userNotesPanel);
         userNotesPanel.setLayout(userNotesLayout);
         userNotesLayout.setAutoCreateContainerGaps(true);
@@ -171,29 +174,29 @@ public class NewOrEditEntryForm
                                         .addComponent(wordClassLabel))
                                 .addGroup(
                                         mandatoryFieldsLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                .addComponent(dictionaryFormField)
-                                                .addComponent(definitionField)
-                                                .addComponent(wordClassComboBox)))));
+                                        .addComponent(dictionaryFormField)
+                                        .addComponent(definitionField)
+                                        .addComponent(wordClassComboBox)))));
         mandatoryFieldsLayout.setVerticalGroup(mandatoryFieldsLayout.createSequentialGroup()
                 .addGroup(
                         mandatoryFieldsLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                .addGroup(mandatoryFieldsLayout.createSequentialGroup()
-                                        .addGroup(
-                                                mandatoryFieldsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(wordClassLabel)
-                                                        .addComponent(wordClassComboBox))
-                                        .addGroup(
-                                                mandatoryFieldsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(dictionaryFormLabel)
-                                                        .addComponent(dictionaryFormField))
-                                        .addGroup(
-                                                mandatoryFieldsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(dictionaryFormHelperLabel))
-                                        .addGroup(
-                                                mandatoryFieldsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(definitionLabel)
-                                                        .addComponent(definitionField))
-                                )
+                        .addGroup(mandatoryFieldsLayout.createSequentialGroup()
+                                .addGroup(
+                                        mandatoryFieldsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                        .addComponent(wordClassLabel)
+                                        .addComponent(wordClassComboBox))
+                                .addGroup(
+                                        mandatoryFieldsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                        .addComponent(dictionaryFormLabel)
+                                        .addComponent(dictionaryFormField))
+                                .addGroup(
+                                        mandatoryFieldsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                        .addComponent(dictionaryFormHelperLabel))
+                                .addGroup(
+                                        mandatoryFieldsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                        .addComponent(definitionLabel)
+                                        .addComponent(definitionField))
+                        )
                 )
         );
     }
@@ -214,22 +217,24 @@ public class NewOrEditEntryForm
         optionalFieldsLayout.setAutoCreateContainerGaps(true);
 
         String[] optionalWordForms = currentWordClass.getOptionalForms();
-        JLabel[] optionalWordFormsLabels = new JLabel[optionalWordForms.length];
-        JTextField[] optionalWordFormsTextFields = new JTextField[optionalWordForms.length];
+        optionalWordFormsLabels = new LinkedHashMap<>();
+        optionalWordFormsTextFields = new LinkedHashMap<>();
+
         for (int i = 0; i < optionalWordForms.length; i++)
         {
-            optionalWordFormsLabels[i] = new JLabel("<html>" + optionalWordForms[i] + ":</html>");
-            optionalWordFormsTextFields[i] = new JTextField();
-            optionalWordFormsTextFields[i].setPreferredSize(new Dimension(dialog.getWidth()/2, 12));
+            String key = optionalWordForms[i];
+            optionalWordFormsLabels.put(key, new JLabel("<html>" + optionalWordForms[i] + ":</html>"));
+            optionalWordFormsTextFields.put(key, new JTextField());
+            optionalWordFormsTextFields.get(key).setPreferredSize(new Dimension(dialog.getWidth() / 2, 12));
         }
 
         ParallelGroup labelsGroup = optionalFieldsLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
-        for (JLabel l : optionalWordFormsLabels)
+        for (JLabel l : optionalWordFormsLabels.values())
         {
             labelsGroup.addComponent(l);
         }
         ParallelGroup fieldsGroup = optionalFieldsLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
-        for (JTextField f : optionalWordFormsTextFields)
+        for (JTextField f : optionalWordFormsTextFields.values())
         {
             fieldsGroup.addComponent(f);
         }
@@ -242,24 +247,58 @@ public class NewOrEditEntryForm
         SequentialGroup topToBottom = optionalFieldsLayout.createSequentialGroup();
         for (int i = 0; i < optionalWordForms.length; i++)
         {
+            String key = optionalWordForms[i];
+
             topToBottom.addGroup(optionalFieldsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(optionalWordFormsLabels[i])
-                    .addComponent(optionalWordFormsTextFields[i]));
+                    .addComponent(optionalWordFormsLabels.get(key))
+                    .addComponent(optionalWordFormsTextFields.get(key)));
         }
         optionalFieldsLayout.setVerticalGroup(topToBottom);
     }
 
-    public JTextField[] getOptionalFormTextFields()
+    public void setOptionalFormTextFieldValues(LinkedHashMap<String, String> input)
     {
-        List<JTextField> optionalTextFields = new ArrayList<>();
-        for (Component c : optionalFieldsPanel.getComponents())
+        System.out.println("input " + input);
+        for (String key : input.keySet())
         {
-            if (c instanceof JTextField)
+            JTextField correspondingField = this.optionalWordFormsTextFields.get(key);
+            if (correspondingField != null)
             {
-                optionalTextFields.add((JTextField) c);
+                correspondingField.setText(input.get(key));
+            } else
+            {
+                JOptionPane.showMessageDialog(this.dialog, "<html>It looks like you are trying to a edit word with an optional form, "
+                        + "<strong>" + key + "</strong>, that existed<br/>"
+                        + " in an earlier version of GlosTrainer. The form has been renamed or removed in this version of GlosTrainer,<br/>"
+                        + "which means that I have lost the value that you have entered for that form. I apologize for the inconvenience  :(<br/>"
+                        + "Please check the Optional Forms panel to see if there are any empty fields that need to be filled in again.<br/><br/>"
+                        + "For more details on which fields have been renamed, added or removed, refer to the release notes of GlosTrainer.</html>", 
+                        "Notice", 
+                        JOptionPane.INFORMATION_MESSAGE);
             }
         }
-        return optionalTextFields.toArray(new JTextField[optionalTextFields.size()]);
+    }
+
+    /**
+     * Retrieves a <code>LinkedHashMap</code> mapping of
+     * <code>String -&gt; String</code> where the keys are the optional forms of
+     * the word and the values are the entered values from the user in the text
+     * fields in the form. <code>LinkedHashMap</code> preserves insertion order,
+     * so we keep the same order for when opening the Edit Entry form. The
+     * values are trimmed, and a field left blank in the form will correspond to
+     * an empty string in the array.
+     *
+     * @return a <code>LinkedHashMap</code>s with key-value pairs of the
+     * optional forms that the user has entered
+     */
+    public LinkedHashMap<String, String> getOptionalFormTextFieldsValues()
+    {
+        LinkedHashMap<String, String> result = new LinkedHashMap<>();
+        optionalWordFormsTextFields.keySet().stream().forEach((key) ->
+        {
+            result.put(key, optionalWordFormsTextFields.get(key).getText());
+        });
+        return result;
     }
 
     private JPanel mandatoryFieldsPanel;
@@ -284,6 +323,9 @@ public class NewOrEditEntryForm
 
     private JButton okButton;
     private JButton cancelButton;
+
+    private LinkedHashMap<String, JLabel> optionalWordFormsLabels;
+    private LinkedHashMap<String, JTextField> optionalWordFormsTextFields;
 
     /**
      * @return the okButton

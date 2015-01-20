@@ -7,6 +7,7 @@ import glostrainer.model.WordClass;
 import glostrainer.view.NewOrEditEntryForm;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
+import java.util.LinkedHashMap;
 import javax.swing.AbstractAction;
 import static javax.swing.Action.SHORT_DESCRIPTION;
 import javax.swing.JDialog;
@@ -70,7 +71,7 @@ public class NewOrEditEntryFormController
     private void initComponents()
     {
         view.getOkButton().setAction(new OkButtonAction());
-        view.getDictionaryFormField().requestFocus();;
+        view.getDictionaryFormField().requestFocus();
         view.getCancelButton().setAction(new CancelButtonAction());
         view.getWordClassComboBox().addItemListener((ItemEvent e) ->
         {
@@ -98,11 +99,12 @@ public class NewOrEditEntryFormController
         view.getDictionaryFormField().setText("");
         view.getDefinitionField().setText("");
         view.setWordClassSpecificOptionalFields(WordClass.values()[0]);
-
-        for (JTextField optionalField : view.getOptionalFormTextFields())
+        
+        /*
+        for (JTextField optionalField : view.getOptionalFormTextFieldsValues())
         {
             optionalField.setText("");
-        }
+        }*/
 
         frame.setVisible(true);
     }
@@ -139,11 +141,9 @@ public class NewOrEditEntryFormController
         view.getDictionaryFormField().setText(wordToEdit.getSwedishDictionaryForm());
         view.getDefinitionField().setText(wordToEdit.getDefinition());
         view.setWordClassSpecificOptionalFields(wordToEdit.getWordClass());
+        
+        view.setOptionalFormTextFieldValues(wordToEdit.getOptionalForms());
 
-        for (int i = 0; i < wordToEdit.getOptionalForms().length; i++)
-        {
-            view.getOptionalFormTextFields()[i].setText(wordToEdit.getOptionalForms()[i]);
-        }
         view.getFrame().setVisible(true);
     }
     
@@ -179,29 +179,12 @@ public class NewOrEditEntryFormController
                 model.getCurrentSelectedWordClass(), 
                 view.getDictionaryFormField().getText().trim(),
                 view.getDefinitionField().getText().trim(),
-                this.getOptionalFieldTexts(),
+                view.getOptionalFormTextFieldsValues(),
                 view.getUserNotesTextArea().getText().trim()
         ));
     }
     
-    /**
-     * Retrieves an array of <code>String</code> consisting of  all of the 
-     * values from user-entered text fields in the optional forms panel
-     * of the view. 
-     * The values are trimmed, and a field left blank in the form will correspond 
-     * to an empty string in the array.
-     * @return an array of <code>String</code>s with all the user-entered optional forms
-     */
-    private String[] getOptionalFieldTexts()
-    {
-        JTextField[] fields = view.getOptionalFormTextFields();
-        String[] result = new String[fields.length];
-        for (int i = 0; i < fields.length; i++)
-        {
-            result[i] = fields[i].getText().trim();
-        }
-        return result;
-    }
+    
     
     /**
      * When the OKButtonAction is invoked, validate the form. If it is valid,
