@@ -98,7 +98,6 @@ public class WordlistFrameController
             );
 
             setupViewEvents();
-
             this.view.getFrame().setVisible(true);
         });
     }
@@ -348,7 +347,7 @@ public class WordlistFrameController
                      */
                     case KeyEvent.VK_SPACE:
                     case KeyEvent.VK_ENTER:
-                        if (view.getWordlistTable().getSelectedRows()[0] == model.getWordCount())
+                        if (view.getWordlistTable().getSelectedRows()[0] == model.getCount())
                         {
                             openNewEntryForm();
                         } else
@@ -402,7 +401,7 @@ public class WordlistFrameController
              * it will always point to the latest word.
              */
             WordEntry wordToAdd = new WordEntry(this.newOrEditEntryFormController.getCurrentWordEntry());
-            this.model.addWord(wordToAdd);
+            this.model.addWordEntry(wordToAdd);
             addTableRowFromWord(wordToAdd);
             // because the NewLineTable will add an empty line for us, we don't need to add an empty row here
 
@@ -450,11 +449,11 @@ public class WordlistFrameController
          */
         int selectedIndexInModel = view.getWordlistTable().convertRowIndexToModel(selectedIndexInView);
 
-        this.newOrEditEntryFormController.openEditEntryFrame(this.model.getWordAtIndex(selectedIndexInModel));
+        this.newOrEditEntryFormController.openEditEntryFrame(this.model.getWordEntryAtIndex(selectedIndexInModel));
         if (this.newOrEditEntryFormController.wordEntryWasSaved)
         {
             WordEntry savedWord = this.newOrEditEntryFormController.getCurrentWordEntry();
-            this.model.replaceWordAtIndex(selectedIndexInModel, savedWord);
+            this.model.replaceWordEntryAtIndex(selectedIndexInModel, savedWord);
             System.out.println("Got word " + savedWord);
 
             // edit table entry
@@ -554,7 +553,7 @@ public class WordlistFrameController
      */
     public void deleteWordAtIndex(int indexInModelToDelete)
     {
-        this.model.removeWordAtIndex(indexInModelToDelete);
+        this.model.removeWordEntryAtIndex(indexInModelToDelete);
         // delete table entry
         DefaultTableModel tableModel = (DefaultTableModel) view.getWordlistTable().getModel();
         tableModel.removeRow(indexInModelToDelete);
@@ -568,7 +567,7 @@ public class WordlistFrameController
      */
     public void updateEntryCount()
     {
-        int totalEntryCount = this.model.getWordCount();
+        int totalEntryCount = this.model.getCount();
         String entryOrEntries = (totalEntryCount == 1) ? "entry" : "entries";
         int filteredEntryCount = getFilteredRowCount();
         String filteredEntryOrEntries = (filteredEntryCount == 1) ? "entry" : "entries";
@@ -640,7 +639,7 @@ public class WordlistFrameController
                 {
                     clearEntries();
                     model = WordlistModel.loadFromFile(chooser.getSelectedFile());
-                    Logger.getLogger(WordlistFrame.class.getName()).log(Level.INFO, "Loaded file with {0} words.", model.getWordCount());
+                    Logger.getLogger(WordlistFrame.class.getName()).log(Level.INFO, "Loaded file with {0} words.", model.getCount());
                     populateTableFromModel();
                 }
             } catch (IOException | ClassNotFoundException ex) // we didn't get a valid file

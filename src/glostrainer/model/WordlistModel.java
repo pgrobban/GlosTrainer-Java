@@ -17,17 +17,19 @@ import java.util.stream.Stream;
  *
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
-public class WordlistModel extends AbstractWordlistModel implements Serializable
+public class WordlistModel implements WordlistInterface
 {
 
     private static final long serialVersionUID = 42L;
+    
+    private List<WordEntry> wordlist;
 
     /**
      *
      */
     public WordlistModel()
     {
-        wordList = new ArrayList<>();
+        wordlist = new ArrayList<>();
     }
 
     /**
@@ -35,12 +37,17 @@ public class WordlistModel extends AbstractWordlistModel implements Serializable
      * @param word
      */
     @Override
-    public void addWord(WordEntry word)
+    public void addWordEntry(WordEntry word)
     {
         Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Adding word to list: {0}", word);
-        wordList.add(word);
-        Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Word list now has {0} entries remaining", getWordCount());
+        wordlist.add(word);
+        Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Word list now has {0} entries remaining", getCount());
 
+    }
+    
+    public int getCount()
+    {
+        return wordlist.size();
     }
 
     /**
@@ -49,9 +56,9 @@ public class WordlistModel extends AbstractWordlistModel implements Serializable
      * @return
      */
     @Override
-    public WordEntry getWordAtIndex(int index)
+    public WordEntry getWordEntryAtIndex(int index)
     {
-        WordEntry word = wordList.get(index);
+        WordEntry word = wordlist.get(index);
         Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Getting word from index {0}: {1}", new Object[]
         {
             index, word
@@ -61,7 +68,7 @@ public class WordlistModel extends AbstractWordlistModel implements Serializable
 
     public Stream<WordEntry> getAllWordsAsStream()
     {
-        return wordList.stream();
+        return wordlist.stream();
     }
 
     /**
@@ -70,10 +77,10 @@ public class WordlistModel extends AbstractWordlistModel implements Serializable
      * @param word
      */
     @Override
-    public void replaceWordAtIndex(int index, WordEntry word)
+    public void replaceWordEntryAtIndex(int index, WordEntry word)
     {
         Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Replacing word at index {0}", index);
-        wordList.set(index, word);
+        wordlist.set(index, word);
         Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Replacing word at index {0} is {1}: ", new Object[]
         {
             index, word
@@ -85,19 +92,19 @@ public class WordlistModel extends AbstractWordlistModel implements Serializable
      * @param index
      */
     @Override
-    public void removeWordAtIndex(int index)
+    public void removeWordEntryAtIndex(int index)
     {
-        WordEntry wordToRemove = wordList.remove(index);
+        WordEntry wordToRemove = wordlist.remove(index);
         Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Deleting word at index {0}, which is {1}: ", new Object[]
         {
             index, wordToRemove
         });
-        Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Word list now has {0} entries left ", this.getWordCount());
+        Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Word list now has {0} entries left ", this.getCount());
     }
 
     public void removeAllWords()
     {
-        wordList = new ArrayList<>();
+        wordlist = new ArrayList<>();
     }
 
     public static WordlistModel loadFromFile(File file) throws IOException, ClassNotFoundException
@@ -105,14 +112,14 @@ public class WordlistModel extends AbstractWordlistModel implements Serializable
         ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
         List wordList = (ArrayList) in.readObject();
         WordlistModel m = new WordlistModel();
-        m.wordList = wordList;
+        m.wordlist = wordList;
         return m;
     }
 
     public void saveToFile(File file) throws IOException
     {
         ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
-        out.writeObject(wordList);
+        out.writeObject(wordlist);
         out.close();
     }
 

@@ -1,11 +1,8 @@
 package glostrainer.view;
 
 import glostrainer.model.WordClass;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import javax.swing.*;
 import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
@@ -29,8 +26,10 @@ public class NewOrEditEntryForm
     public NewOrEditEntryForm(JFrame ownerFrame)
     {
         dialog = new JDialog(ownerFrame, true);
-        dialog.setAlwaysOnTop(true);
-
+        SwingUtilities.invokeLater(() -> {
+                    dialog.setLocationRelativeTo(ownerFrame);
+        });
+        
         initComponents();
         initLayout();
 
@@ -63,13 +62,12 @@ public class NewOrEditEntryForm
         wordClassComboBox.setMaximumSize(new Dimension(100, 20));
 
         userNotesLabel = new JLabel("My notes:");
-        userNotesTextArea = new JTextArea(3, 30);
+        userNotesTextArea = new JTextArea(4, 30);
         pronunciationLabel = new JLabel("Pronunciation recording: ");
         pronunciationLabel2 = new JLabel("<html><small>Coming in a future version... maybe ;) </small></html>");
 
         okButton = new JButton();
         cancelButton = new JButton();
-
     }
 
     private void initLayout()
@@ -158,7 +156,6 @@ public class NewOrEditEntryForm
 
     private void initMandatoryFieldsLayout()
     {
-        // mandatory fields panel mainLayout
         mandatoryFieldsPanel.setBorder(new CustomTitledBorder("Mandatory fields"));
         GroupLayout mandatoryFieldsLayout = new GroupLayout(mandatoryFieldsPanel);
         mandatoryFieldsPanel.setLayout(mandatoryFieldsLayout);
@@ -296,7 +293,9 @@ public class NewOrEditEntryForm
         LinkedHashMap<String, String> result = new LinkedHashMap<>();
         optionalWordFormsTextFields.keySet().stream().forEach((key) ->
         {
-            result.put(key, optionalWordFormsTextFields.get(key).getText());
+            String value = optionalWordFormsTextFields.get(key).getText().trim();
+            if (!value.equals(""))
+                result.put(key, value);
         });
         return result;
     }

@@ -7,12 +7,10 @@ import glostrainer.model.WordClass;
 import glostrainer.view.NewOrEditEntryForm;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
-import java.util.LinkedHashMap;
 import javax.swing.AbstractAction;
 import static javax.swing.Action.SHORT_DESCRIPTION;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 // TODO: use SwingWorkers to safely open and close dialogs
@@ -21,13 +19,13 @@ import javax.swing.SwingUtilities;
  * This controller handles interactions for the user with the
  NewOrEditEntryForm, a modal JDialog. 
  * There are two modes for this form, either for adding a new word or for editing
- * a word from an existing one. Since both cases deal with the same reference to
- * the frame in the view, we modify that reference (set visibility to true/false,
- * modify title and appropriate components) rather than creating new views
- * every time the user chooses to enter a new word or edit a word.
- * 
- * The model here represents the entered data from the GUI's JTextFiedls (and 
- * JComboBox for the word class etc).
+ a word from an existing one. Since both cases deal with the same reference to
+ the form in the view, we modify that reference (set visibility to true/false,
+ modify title and appropriate components) rather than creating new views
+ every time the user chooses to enter a new word or edit a word.
+ 
+ The model here represents the entered data from the GUI's JTextFiedls (and 
+ JComboBox for the word class etc).
  *
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
@@ -91,26 +89,20 @@ public class NewOrEditEntryFormController
     {
         this.wordEntryWasSaved = false;
 
-        JDialog frame = view.getFrame();
-        frame.setTitle("New Entry");
-        frame.setLocationRelativeTo(null);
-
+        JDialog form = view.getFrame();
+        form.setTitle("New Entry");
+        
+        // clear all input
         view.getWordClassComboBox().setSelectedIndex(0);
         view.getDictionaryFormField().setText("");
         view.getDefinitionField().setText("");
         view.setWordClassSpecificOptionalFields(WordClass.values()[0]);
-        
-        /*
-        for (JTextField optionalField : view.getOptionalFormTextFieldsValues())
-        {
-            optionalField.setText("");
-        }*/
 
-        frame.setVisible(true);
+        form.setVisible(true);
     }
     
     /**
-     * Closes the frame. The method does not modify the <code>wordEntryWasSaved</code> 
+     * Closes the form. The method does not modify the <code>wordEntryWasSaved</code> 
      * flag.
      */
     public void closeForm()
@@ -130,7 +122,7 @@ public class NewOrEditEntryFormController
      */
     public void openEditEntryFrame(WordEntry wordToEdit)
     {
-        System.out.println("Opening Edit Entry Frame with " + wordToEdit);
+        //System.out.println("Opening Edit Entry Frame with " + wordToEdit);
         this.wordEntryWasSaved = false;
 
         JDialog frame = view.getFrame();
@@ -143,7 +135,6 @@ public class NewOrEditEntryFormController
         view.setWordClassSpecificOptionalFields(wordToEdit.getWordClass());
         
         view.setOptionalFormTextFieldValues(wordToEdit.getOptionalForms());
-
         view.getFrame().setVisible(true);
     }
     
