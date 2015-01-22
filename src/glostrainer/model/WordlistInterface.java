@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 /**
  * An abstract model for getting and setting word entries in a list-like manner.
+ * The interface is supposed to resemble a CRUD (Create, Read, Update, Delete) one.
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
 public interface WordlistInterface extends Serializable 

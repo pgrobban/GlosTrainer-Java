@@ -4,15 +4,25 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 
 /**
- *
+ * Represents a word entry from a user's perspective. A <code>WordEntry</code> object
+ * has a word class, a Swedish Dictionary Form, a Definition (which could be entered
+ * in any language), a <code>LinkedHashMap</code> that maps optional form name &gt;
+ * user's entered value) and user notes.
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
 public class WordEntry implements Serializable
 {
+    /**
+     * 
+     */
     private WordClass wordClass;
-    
+    /**
+     * 
+     */
     private String swedishDictionaryForm;
-    
+    /**
+     * 
+     */
     private String definition;
     
     /**
@@ -22,23 +32,39 @@ public class WordEntry implements Serializable
      * fields are correct, so a <code>LinkedHashMap</code> should be good for this purpose.
      */
     private LinkedHashMap<String, String>optionalForms;
-    
+    /**
+     * Additional details that the user wants to store about the word.
+     */
     private String userNotes;
     
     private static final long serialVersionUID = 43L;
 
-    
+    /**
+     * Creates a word with the word class set to NOUN and all other fields
+     * set to empty Strings.
+     */
     public WordEntry()
     {
         this(WordClass.NOUN, "", "", new LinkedHashMap<>(), "");
     }
     
-    // copy constructor
+    /**
+     * Copy constructor.
+     * @param copy the word to copy
+     */
     public WordEntry(WordEntry copy)
     {
         this(copy.wordClass, copy.swedishDictionaryForm, copy.definition, copy.optionalForms, copy.userNotes);
     }
     
+    /**
+     * Creates a new word with the given information.
+     * @param wordClass
+     * @param swedishDictionaryForm
+     * @param definition
+     * @param optionalForms
+     * @param userNotes 
+     */
     public WordEntry(WordClass wordClass, String swedishDictionaryForm, 
             String definition, LinkedHashMap<String, String> optionalForms, String userNotes)
     {
@@ -48,7 +74,14 @@ public class WordEntry implements Serializable
         this.optionalForms = optionalForms;
         this.userNotes = userNotes;
     }
-
+    
+    /**
+     * Returns a human-readable <code>String</code> with all information entered
+     * about the word. The string contains the optional forms LinkedHashMap as
+     * seen by the software, as well as a concise version with the keys removed,
+     * suitable for displaying to the user.
+     * @return 
+     */
     @Override
     public String toString()
     {
@@ -62,6 +95,7 @@ public class WordEntry implements Serializable
     }
 
     /**
+     * Retrieves the word class of the word entry.
      * @return the wordClass
      */
     public WordClass getWordClass()
@@ -70,6 +104,7 @@ public class WordEntry implements Serializable
     }
 
     /**
+     * Sets the word class of this word entry.
      * @param wordClass the wordClass to set
      */
     public void setWordClass(WordClass wordClass)
@@ -78,7 +113,8 @@ public class WordEntry implements Serializable
     }
 
     /**
-     * @return the swedishDictionaryForm
+     * Retrieves the Swedish dictionary Form of this word entry.
+     * @return the Swedish dictionary form
      */
     public String getSwedishDictionaryForm()
     {
@@ -86,7 +122,8 @@ public class WordEntry implements Serializable
     }
 
     /**
-     * @param swedishDictionaryForm the swedishDictionaryForm to set
+     * Sets the Swedish dictionary form of this word entry
+     * @param swedishDictionaryForm the Swedish dictionary form to set
      */
     public void setSwedishDictionaryForm(String swedishDictionaryForm)
     {
@@ -94,6 +131,7 @@ public class WordEntry implements Serializable
     }
 
     /**
+     * Gets the definition of this word entry.
      * @return the definition
      */
     public String getDefinition()
@@ -102,6 +140,7 @@ public class WordEntry implements Serializable
     }
 
     /**
+     * Sets the definition of this word entry.
      * @param definition the definition to set
      */
     public void setDefinition(String definition)
@@ -110,6 +149,9 @@ public class WordEntry implements Serializable
     }
 
     /**
+     * Returns a <code>LinkedHashMap</code> of the word's optional forms.
+     * The keys should be the optional forms belonging to the word's word class,
+     * and its values are the user-entered values for each optional form.
      * @return the optionalForms
      */
     public LinkedHashMap<String, String> getOptionalForms()
@@ -117,6 +159,16 @@ public class WordEntry implements Serializable
         return optionalForms;
     }
     
+    /**
+     * Returns a "prettified" version of the optional forms of this word as a String,
+     * suitable for displaying to the user in a table.
+     * In this form, all of the optionalForm Maps' keys are removed, so we will
+     * return a comma-separated list of the values. null or empty keys are removed
+     * as well, so if there are no optional forms of this word class available, or
+     * the user has not entered any values for optional forms, then this method
+     * will return an empty String.
+     * @return the optional forms of this word as a String
+     */
     public String getOptionalFormsAsString()
     {
         StringBuilder output = new StringBuilder("");
@@ -131,6 +183,7 @@ public class WordEntry implements Serializable
     }
 
     /**
+     * Sets the optional forms of this word entry.
      * @param optionalForms the optionalForms to set
      */
     public void setOptionalForms(LinkedHashMap<String, String> optionalForms)
@@ -138,13 +191,18 @@ public class WordEntry implements Serializable
         this.optionalForms = optionalForms;
     }
     
+    /**
+     * Retrieves any user notes stored for this word entry.
+     * @return the user notes for this word entry
+     */
     public String getUserNotes()
     {
         return userNotes;
     }
 
     /**
-     * @param userNotes the userNotes to set
+     * Sets the user notes for this word entry.
+     * @param userNotes the user notes to set
      */
     public void setUserNotes(String userNotes)
     {

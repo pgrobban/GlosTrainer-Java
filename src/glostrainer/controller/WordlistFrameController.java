@@ -685,7 +685,7 @@ public class WordlistFrameController
      */
     public void clearEntries()
     {
-        this.model.removeAllWords();
+        this.model.clear();
         DefaultTableModel tableModel = (DefaultTableModel) this.view.getWordlistTable().getModel();
         tableModel.setRowCount(0);
         this.updateEntryCount();
