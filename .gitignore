@@ -1,5 +1,4 @@
 build/*
 dist/*
 manifest.mf
-build.xml
 nbproject/private/private.xml
