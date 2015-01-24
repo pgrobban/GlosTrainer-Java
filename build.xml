@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="GlosTrainer" default="default" basedir=".">
+    <description>Builds, tests, and runs the project GlosTrainer. After compilation,
+        create a zip with the jar and lib folder.</description>
+    
+    <property name="project-name" value="${ant.project.name}" />
+    <property name="folder-to-zip" value="dist" />
+    
+    <import file="nbproject/build-impl.xml"/>
+    
+    <target name="-post-jar">
+        <zip destfile="${project-name}.zip" basedir="${folder-to-zip}" excludes="README.TXT" />
+    </target>
+  
+</project>
