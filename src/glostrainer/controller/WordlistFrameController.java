@@ -119,9 +119,9 @@ public class WordlistFrameController
         setupTableKeyListener();
         setupTableSelectionChangedListener();
 
-        TableRowSorter<TableModel> sorter = setupTableSorter();
-        RowFilter<TableModel, Integer> rowFilter = setupTableRowFilter();
-        setupFilterFieldListener(sorter, rowFilter);
+        setupTableSorter();
+        setupTableRowFilter();
+        setupFilterFieldListener();
     }
 
     /**
@@ -147,16 +147,18 @@ public class WordlistFrameController
      * alphabet consists of the letters A-Z as in English, followed by Å (A with
      * a ring above), Ä (A with two dots above) and Ö (O with two dots above),
      * in this particular order. For the sorting, we ignore letter cases.
-     *
-     * @return
      */
-    private TableRowSorter<TableModel> setupTableSorter()
+    private void setupTableSorter()
     {
         TableRowSorter<TableModel> sorter = new TableRowSorter<>(view.getWordlistTable().getModel());
+        view.getWordlistTable().setRowSorter(sorter);
+
         try
         {
-            String rules = "< a < å < ä < ö";
-            final RuleBasedCollator ruleBasedCollator = new RuleBasedCollator(rules);
+            String swedishAlphabet = "< a < b < c < d < e < f < g < h < i"
+                    + "< j < k < l < m < n < o < p < q < r < s < t < u"
+                    + "< v < w < y < z < \u00E5 < \u00E4 < \u00F6";
+            final RuleBasedCollator ruleBasedCollator = new RuleBasedCollator(swedishAlphabet);
             Comparator<String> swedishComparator = (String o1, String o2) ->
             {
                 return ruleBasedCollator.compare(o1.toLowerCase(), o2.toLowerCase());
@@ -171,8 +173,6 @@ public class WordlistFrameController
             // shouldn't happen
             Logger.getLogger(WordlistFrameController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        view.getWordlistTable().setRowSorter(sorter);
-        return sorter;
     }
 
     /**
@@ -184,7 +184,7 @@ public class WordlistFrameController
      *
      * @return
      */
-    private RowFilter<TableModel, Integer> setupTableRowFilter()
+    private void setupTableRowFilter()
     {
         // TODO: refactor?
         RowFilter<TableModel, Integer> rf = new RowFilter()
@@ -254,7 +254,8 @@ public class WordlistFrameController
                 }
             }
         };
-        return rf;
+        TableRowSorter sorter = (TableRowSorter) view.getWordlistTable().getRowSorter();
+        sorter.setRowFilter(rf);
     }
 
     /**
@@ -263,8 +264,11 @@ public class WordlistFrameController
      * @param sorter
      * @param rf
      */
-    private void setupFilterFieldListener(TableRowSorter<TableModel> sorter, RowFilter<TableModel, Integer> rf)
+    private void setupFilterFieldListener()
     {
+        TableRowSorter sorter = (TableRowSorter) view.getWordlistTable().getRowSorter();
+        RowFilter rf = sorter.getRowFilter();
+
         this.view.getFilterField().getDocument().addDocumentListener(
                 new DocumentListener()
                 {
@@ -454,7 +458,6 @@ public class WordlistFrameController
         {
             WordEntry savedWord = this.newOrEditEntryFormController.getCurrentWordEntry();
             this.model.replaceWordEntryAtIndex(selectedIndexInModel, savedWord);
-            System.out.println("Got word " + savedWord);
 
             // edit table entry
             DefaultTableModel tableModel = (DefaultTableModel) view.getWordlistTable().getModel();

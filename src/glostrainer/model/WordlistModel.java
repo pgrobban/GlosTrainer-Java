@@ -167,11 +167,12 @@ public class WordlistModel implements WordlistInterface, Serializable
      */
     public void saveToFile(File file) throws IOException
     {
-        Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Saving file {0} ", file.getCanonicalPath());
+        Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Attempting to save file to {0} ", file.getCanonicalPath());
 
-        ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
-        out.writeObject(wordlist);
-        out.close();
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file)))
+        {
+            out.writeObject(wordlist);
+        }
     }
 
 }
