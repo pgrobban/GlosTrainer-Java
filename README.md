@@ -9,10 +9,10 @@ the Swedish language. Made by Robert Sebescen, written in Java SE 1.8.
 <img src="http://i.imgur.com/mfhBMnw.png" title="An edit form" alt="An edit form"/>
 
 
-This is rewritten of an application that I wrote as a final project for a
+This is a complete rewrite of an application that I wrote as a final project for a
 course in C# (the source code for that is also available here on my Github). 
 The Java version is platform-independent and the code follows the MVC model 
-for better structure.
+for a more robust and easy-to-overview structure.
 
 How to run the application:
 ------
@@ -29,6 +29,11 @@ forms for nouns are available. Thus user can add own notes to the word entries.
 well as being limited to  only dictionary forms of words, or expanded to all forms 
 of words.  
 * supports importing and exporting word lists to/from files.
+
+If you wish to download the source code of the project, NetBeans should
+recognize the files as a project from this level in the file hierarchy. 
+The build.xml ANT file automates creation of a runnable jar file for the application, 
+as well as zipping that file and the image folder for easy distribution.
 
 
 
