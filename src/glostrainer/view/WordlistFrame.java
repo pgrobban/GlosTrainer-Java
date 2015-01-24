@@ -6,7 +6,9 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 /**
- *
+ * Represents the main GUI of the application. For window manipulations, use
+ * the <code>getFrame()</code> method. The class exposes methods for retrieving
+ * the buttons and other components in the GUI.
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
 public class WordlistFrame
@@ -70,7 +72,7 @@ public class WordlistFrame
 
         entryPanel.setBorder(new CustomTitledBorder("Entry"));
 
-        JLabel filterLabel = new JLabel("Filter:");
+        filterLabel = new JLabel("Filter:");
         filterTextField.setText("");
 
         exactMatchCheckBox.addItemListener((ItemEvent e) ->
@@ -85,6 +87,48 @@ public class WordlistFrame
         });
         allFormsCheckButton.setToolTipText("Search in all forms. If this is turned off, the search will only look for the Swedish Dictionary Forms and Definition fields.");
 
+        initLayout();
+
+        getWordlistTable().setRowSelectionAllowed(true);
+        getWordlistTable().setToolTipText(TABLE_TOOLTIP);
+        getWordlistTable().setModel(new DefaultTableModel(
+                new Object[][]
+                {
+                },
+                new String[]
+                {
+                    "Swedish dictionary form", "Definition", "Word class", "Other forms"
+                }
+        )
+        {
+            @Override
+            public Class getColumnClass(int columnIndex)
+            {
+                return String.class;
+            }
+
+            @Override
+            public boolean isCellEditable(int rowIndex, int columnIndex)
+            {
+                return false;
+            }
+        });
+
+        wordlistScrollPane.setViewportView(wordlistTable);
+        //wordlistTable.setFillsViewportHeight(true);
+        wordlistTable.getColumnModel().getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        wordlistTable.getColumnModel().getColumn(SWEDISH_DICTIONARY_FORM_COLUMN).setPreferredWidth(100);
+        wordlistTable.getColumnModel().getColumn(OPTIONAL_FORMS_COLUMN).setPreferredWidth(250);
+        wordlistTable.setFont(wordlistTable.getFont().deriveFont(Font.PLAIN, 14));
+
+        bottomPanel.setBorder(new CustomTitledBorder("List"));
+
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+    }
+
+    private void initLayout()
+    {
         // panel entry layout
         GroupLayout entryPanelLayout = new GroupLayout(entryPanel);
         entryPanel.setLayout(entryPanelLayout);
@@ -144,56 +188,19 @@ public class WordlistFrame
 
         mainLayout.setVerticalGroup(
                 mainLayout.createSequentialGroup()
-                .addGroup(mainLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                        .addComponent(entryPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addGroup(mainLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                        .addComponent(wordlistScrollPane))
-                .addGroup(mainLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                        .addComponent(bottomPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)));
-
+                        .addGroup(mainLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                .addComponent(entryPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                        .addGroup(mainLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                .addComponent(wordlistScrollPane))
+                        .addGroup(mainLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                .addComponent(bottomPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)));
+        
         mainLayout.setHorizontalGroup(
                 mainLayout.createSequentialGroup()
-                .addGroup(mainLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addComponent(entryPanel)
-                        .addComponent(wordlistScrollPane)
-                        .addComponent(bottomPanel)));
-
-        getWordlistTable().setRowSelectionAllowed(true);
-        getWordlistTable().setToolTipText(TABLE_TOOLTIP);
-        getWordlistTable().setModel(new DefaultTableModel(
-                new Object[][]
-                {
-                },
-                new String[]
-                {
-                    "Swedish dictionary form", "Definition", "Word class", "Other forms"
-                }
-        )
-        {
-            @Override
-            public Class getColumnClass(int columnIndex)
-            {
-                return String.class;
-            }
-
-            @Override
-            public boolean isCellEditable(int rowIndex, int columnIndex)
-            {
-                return false;
-            }
-        });
-
-        wordlistScrollPane.setViewportView(wordlistTable);
-        //wordlistTable.setFillsViewportHeight(true);
-        wordlistTable.getColumnModel().getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        wordlistTable.getColumnModel().getColumn(SWEDISH_DICTIONARY_FORM_COLUMN).setPreferredWidth(100);
-        wordlistTable.getColumnModel().getColumn(OPTIONAL_FORMS_COLUMN).setPreferredWidth(250);
-        wordlistTable.setFont(wordlistTable.getFont().deriveFont(Font.PLAIN, 14));
-
-        bottomPanel.setBorder(new CustomTitledBorder("List"));
-
-        frame.pack();
-        frame.setLocationRelativeTo(null);
+                        .addGroup(mainLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                .addComponent(entryPanel)
+                                .addComponent(wordlistScrollPane)
+                                .addComponent(bottomPanel)));
     }
 
     public JFrame getFrame()
@@ -307,5 +314,6 @@ public class WordlistFrame
     private JScrollPane wordlistScrollPane;
     private JTable wordlistTable;
     private JLabel entryCountLabel;
+    private JLabel filterLabel;
 
 }

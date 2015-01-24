@@ -8,6 +8,13 @@ import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
 
 /**
+ * A form for adding a new word or editing an existing word in the
+ * WordlistFrame. The class does provide a method <code>getFrame()</code> to
+ * retrieve the underlying dialog; however, this is intended to be used for the
+ * controller to open, close and change the mode (new/edit) of the form, so we
+ * do not perform any window manipulations here.
+ * The class exposes methods for getting the JTextFields and JComboBox for 
+ * retreiving the user's entered values.
  *
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
@@ -26,16 +33,22 @@ public class NewOrEditEntryForm
     public NewOrEditEntryForm(JFrame ownerFrame)
     {
         dialog = new JDialog(ownerFrame, true);
-        SwingUtilities.invokeLater(() -> {
-                    dialog.setLocationRelativeTo(ownerFrame);
+        SwingUtilities.invokeLater(() ->
+        {
+            dialog.setLocationRelativeTo(ownerFrame);
         });
-        
+
         initComponents();
         initLayout();
 
         dialog.pack();
     }
 
+    /**
+     * A reference to the
+     *
+     * @return
+     */
     public JDialog getFrame()
     {
         return dialog;
@@ -199,7 +212,9 @@ public class NewOrEditEntryForm
     }
 
     /**
-     *
+     * Clears <code>optionalFieldsPanel</code> and dynamically generates JLabels 
+     * and JTextFields to add in the panel that correspond to the optional forms
+     * from the given word class.
      * @param currentWordClass
      */
     public void setWordClassSpecificOptionalFields(WordClass currentWordClass)
@@ -217,24 +232,23 @@ public class NewOrEditEntryForm
         optionalWordFormsLabels = new LinkedHashMap<>();
         optionalWordFormsTextFields = new LinkedHashMap<>();
 
-        for (int i = 0; i < optionalWordForms.length; i++)
+        for (String key : optionalWordForms)
         {
-            String key = optionalWordForms[i];
-            optionalWordFormsLabels.put(key, new JLabel("<html>" + optionalWordForms[i] + ":</html>"));
+            optionalWordFormsLabels.put(key, new JLabel("<html>" + key + ":</html>"));
             optionalWordFormsTextFields.put(key, new JTextField());
             optionalWordFormsTextFields.get(key).setPreferredSize(new Dimension(dialog.getWidth() / 2, 12));
         }
 
         ParallelGroup labelsGroup = optionalFieldsLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
-        for (JLabel l : optionalWordFormsLabels.values())
+        optionalWordFormsLabels.values().stream().forEach((l) ->
         {
             labelsGroup.addComponent(l);
-        }
+        });
         ParallelGroup fieldsGroup = optionalFieldsLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
-        for (JTextField f : optionalWordFormsTextFields.values())
+        optionalWordFormsTextFields.values().stream().forEach((f) ->
         {
             fieldsGroup.addComponent(f);
-        }
+        });
 
         optionalFieldsLayout.setHorizontalGroup(optionalFieldsLayout.createSequentialGroup()
                 .addGroup(labelsGroup)
@@ -242,20 +256,25 @@ public class NewOrEditEntryForm
         );
 
         SequentialGroup topToBottom = optionalFieldsLayout.createSequentialGroup();
-        for (int i = 0; i < optionalWordForms.length; i++)
+        for (String key : optionalWordForms)
         {
-            String key = optionalWordForms[i];
-
             topToBottom.addGroup(optionalFieldsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                     .addComponent(optionalWordFormsLabels.get(key))
                     .addComponent(optionalWordFormsTextFields.get(key)));
         }
         optionalFieldsLayout.setVerticalGroup(topToBottom);
     }
-
+    
+    /**
+     * Sets the values of the optional form text fields from the given
+     * LinkedHashMap. If the corresponding JTextfield does not exist, i.e. if
+     * the optional form has changed from an earlier version of this application, 
+     * show an alert to the user to update the entry.
+     * @param input 
+     */
     public void setOptionalFormTextFieldValues(LinkedHashMap<String, String> input)
     {
-        System.out.println("input " + input);
+        //System.out.println("input " + input);
         for (String key : input.keySet())
         {
             JTextField correspondingField = this.optionalWordFormsTextFields.get(key);
@@ -269,8 +288,8 @@ public class NewOrEditEntryForm
                         + " in an earlier version of GlosTrainer. The form has been renamed or removed in this version of GlosTrainer,<br/>"
                         + "which means that I have lost the value that you have entered for that form. I apologize for the inconvenience  :(<br/>"
                         + "Please check the Optional Forms panel to see if there are any empty fields that need to be filled in again.<br/><br/>"
-                        + "For more details on which fields have been renamed, added or removed, refer to the release notes of GlosTrainer.</html>", 
-                        "Notice", 
+                        + "For more details on which fields have been renamed, added or removed, refer to the release notes of GlosTrainer.</html>",
+                        "Notice",
                         JOptionPane.INFORMATION_MESSAGE);
             }
         }
@@ -295,36 +314,12 @@ public class NewOrEditEntryForm
         {
             String value = optionalWordFormsTextFields.get(key).getText().trim();
             if (!value.equals(""))
+            {
                 result.put(key, value);
+            }
         });
         return result;
     }
-
-    private JPanel mandatoryFieldsPanel;
-    private JPanel optionalFieldsPanel;
-    private JScrollPane optionalFieldsScrollPane;
-    private JPanel okCancelButtonPanel;
-
-    private JTextField definitionField;
-    private JLabel definitionLabel;
-    private JLabel dictionaryFormHelperLabel;
-    private JTextField dictionaryFormField;
-    private JLabel dictionaryFormLabel;
-    private JComboBox wordClassComboBox;
-    private JLabel wordClassLabel;
-
-    private JPanel userNotesPanel;
-    private JLabel userNotesLabel;
-    private JTextArea userNotesTextArea;
-
-    private JLabel pronunciationLabel;
-    private JLabel pronunciationLabel2;
-
-    private JButton okButton;
-    private JButton cancelButton;
-
-    private LinkedHashMap<String, JLabel> optionalWordFormsLabels;
-    private LinkedHashMap<String, JTextField> optionalWordFormsTextFields;
 
     /**
      * @return the okButton
@@ -370,5 +365,31 @@ public class NewOrEditEntryForm
     {
         return userNotesTextArea;
     }
+
+    private JPanel mandatoryFieldsPanel;
+    private JPanel optionalFieldsPanel;
+    private JScrollPane optionalFieldsScrollPane;
+    private JPanel okCancelButtonPanel;
+
+    private JTextField definitionField;
+    private JLabel definitionLabel;
+    private JLabel dictionaryFormHelperLabel;
+    private JTextField dictionaryFormField;
+    private JLabel dictionaryFormLabel;
+    private JComboBox wordClassComboBox;
+    private JLabel wordClassLabel;
+
+    private JPanel userNotesPanel;
+    private JLabel userNotesLabel;
+    private JTextArea userNotesTextArea;
+
+    private JLabel pronunciationLabel;
+    private JLabel pronunciationLabel2;
+
+    private JButton okButton;
+    private JButton cancelButton;
+
+    private LinkedHashMap<String, JLabel> optionalWordFormsLabels;
+    private LinkedHashMap<String, JTextField> optionalWordFormsTextFields;
 
 }

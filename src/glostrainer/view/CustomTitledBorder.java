@@ -5,7 +5,7 @@ import java.awt.Insets;
 import javax.swing.border.TitledBorder;
 
 /**
- *
+ * A TitleBorder with custom insets, to reduce padding.
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
 public class CustomTitledBorder extends TitledBorder

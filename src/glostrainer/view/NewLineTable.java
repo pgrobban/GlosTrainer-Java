@@ -5,7 +5,8 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 /**
- *
+ * A table that keeps an extra empty line. We use it in the application
+ * as an extra way of adding a new entry to the table.
  * @author Peter Lang
  * http://stackoverflow.com/a/2321411/147262
  */
