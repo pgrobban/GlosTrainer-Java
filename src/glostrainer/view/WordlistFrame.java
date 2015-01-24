@@ -202,7 +202,12 @@ public class WordlistFrame
                                 .addComponent(wordlistScrollPane)
                                 .addComponent(bottomPanel)));
     }
-
+    
+    /**
+     * Returns a reference to the underlying JFrame of this view to provide
+     * window manipulations.
+     * @return 
+     */
     public JFrame getFrame()
     {
         return this.frame;
