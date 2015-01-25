@@ -10,7 +10,7 @@
     <import file="nbproject/build-impl.xml"/>
     
     <target name="-post-jar">
-        <zip destfile="${project-name}.zip" basedir="${folder-to-zip}" excludes="README.TXT" />
+        <zip destfile="downloads/${project-name}.zip" basedir="${folder-to-zip}" excludes="README.TXT" />
     </target>
   
 </project>
