@@ -45,7 +45,7 @@ public class WordlistModel implements WordlistInterface, Serializable
     {
         Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Adding word to list: {0}", word);
         wordlist.add(word);
-        Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Word list now has {0} entries", getCount());
+        Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Word list now has {0} entries", getEntryCount());
     }
 
     /**
@@ -53,7 +53,7 @@ public class WordlistModel implements WordlistInterface, Serializable
      *
      * @return the word entry count
      */
-    public int getCount()
+    public int getEntryCount()
     {
         return wordlist.size();
     }
@@ -63,7 +63,7 @@ public class WordlistModel implements WordlistInterface, Serializable
      *
      * @param index - index of the element to return
      * @throws IndexOutOfBoundsException if the index is out of range
-     * <code>(index &lt; 0 || index &gt;= getCount())</code>
+     * <code>(index &lt; 0 || index &gt;= getEntryCount())</code>
      * @return the wird entry at the specified position in this list
      */
     @Override
@@ -95,7 +95,7 @@ public class WordlistModel implements WordlistInterface, Serializable
      * @param index index of the element to replace
      * @param word word entry to be stored at the specified position
      * @throws IndexOutOfBoundsException if the index is out of range
-     * <code>(index &lt; 0 || index &gt;= getCount())</code>
+     * <code>(index &lt; 0 || index &gt;= getEntryCount())</code>
      */
     @Override
     public void replaceWordEntryAtIndex(int index, WordEntry word)
@@ -114,7 +114,7 @@ public class WordlistModel implements WordlistInterface, Serializable
      *
      * @param index the index of the element to be removed
      * @throws IndexOutOfBoundsException if the index is out of range
-     * <code>(index &lt; 0 || index &gt;= getCount())</code>
+     * <code>(index &lt; 0 || index &gt;= getEntryCount())</code>
      */
     @Override
     public void removeWordEntryAtIndex(int index)
@@ -124,7 +124,7 @@ public class WordlistModel implements WordlistInterface, Serializable
         {
             index, wordToRemove
         });
-        Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Word list now has {0} entries left ", this.getCount());
+        Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Word list now has {0} entries left ", this.getEntryCount());
     }
 
     /**
@@ -135,7 +135,7 @@ public class WordlistModel implements WordlistInterface, Serializable
     {
         Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Clearing word list ");
         wordlist.clear();
-        Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Word list now has {0} entries", this.getCount());
+        Logger.getLogger(WordlistModel.class.getName()).log(Level.INFO, "Word list now has {0} entries", this.getEntryCount());
     }
 
     /**

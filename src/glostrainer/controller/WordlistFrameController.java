@@ -351,7 +351,7 @@ public class WordlistFrameController
                      */
                     case KeyEvent.VK_SPACE:
                     case KeyEvent.VK_ENTER:
-                        if (view.getWordlistTable().getSelectedRows()[0] == model.getCount())
+                        if (view.getWordlistTable().getSelectedRows()[0] == model.getEntryCount())
                         {
                             openNewEntryForm();
                         } else
@@ -570,7 +570,7 @@ public class WordlistFrameController
      */
     public void updateEntryCount()
     {
-        int totalEntryCount = this.model.getCount();
+        int totalEntryCount = this.model.getEntryCount();
         String entryOrEntries = (totalEntryCount == 1) ? "entry" : "entries";
         int filteredEntryCount = getFilteredRowCount();
         String filteredEntryOrEntries = (filteredEntryCount == 1) ? "entry" : "entries";
@@ -603,53 +603,59 @@ public class WordlistFrameController
     }
 
     /**
-     * Ask the user for confirmation to overwrite the current list. If the user
-     * confirmed, show a JFileChooser dialog where the user gets to choose the
-     * file to import from. If the file chosen was invalid, display an error to
-     * the user and do nothing. If the file chosen was valid, this will replace
-     * the model that this controller is tied to, and update the view by
+     * If there are words in the model, ask the user for confirmation to
+     * overwrite the current list. If the user confirmed, or there are no words
+     * in the model, show a JFileChooser dialog where the user gets to choose
+     * the file to import from. If the file chosen was invalid, display an error
+     * to the user and do nothing. If the file chosen was valid, this will
+     * replace the model that this controller is tied to, and update the view by
      * clearing and populating the word entry table from the model. Finally,
      * this clears the filter text field to guarantee that the user will see all
      * the new entries in the table.
      */
     public void tryImportList()
     {
-        // had to use showOptionDialog instead of showMessageDialog because it wouldn't let me specify the icon
-        Object[] options =
+        if (model.getEntryCount() > 0)
         {
-            UIManager.getString("OptionPane.yesButtonText"),
-            UIManager.getString("OptionPane.noButtonText"),
-        };
-        int result = JOptionPane.showOptionDialog(view.getFrame(), "Loading a file will replace the current list. Any unsaved changes will be lost. Continue?",
-                "Warning",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE,
-                null,
-                options,
-                options[1]
-        );
-        // did the user confirm to overwrite the list?
-        if (result == JOptionPane.YES_OPTION)
-        {
-            try // try to get a valid file ffrom the user
+            // had to use showOptionDialog instead of showMessageDialog because it wouldn't let me specify the icon
+            Object[] options =
             {
-                JFileChooser chooser = new JFileChooser();
-                FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                        "GlosTrainer list files", "gtl");
-                chooser.setFileFilter(filter);
-                int returnVal = chooser.showOpenDialog(view.getFrame());
-                if (returnVal == JFileChooser.APPROVE_OPTION)
-                {
-                    clearEntries();
-                    model = WordlistModel.loadFromFile(chooser.getSelectedFile());
-                    Logger.getLogger(WordlistFrame.class.getName()).log(Level.INFO, "Loaded file with {0} words.", model.getCount());
-                    populateTableFromModel();
-                }
-            } catch (IOException | ClassNotFoundException ex) // we didn't get a valid file
+                UIManager.getString("OptionPane.yesButtonText"),
+                UIManager.getString("OptionPane.noButtonText"),
+            };
+            int result = JOptionPane.showOptionDialog(view.getFrame(), "Loading a file will replace the current list. Any unsaved changes will be lost. Continue?",
+                    "Warning",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE,
+                    null,
+                    options,
+                    options[1]
+            );
+
+            // did the user confirm to overwrite the list?
+            if (result == JOptionPane.NO_OPTION)
             {
-                JOptionPane.showMessageDialog(view.getFrame(), "Something went wrong when loading the file.", "Error", JOptionPane.ERROR_MESSAGE);
-                Logger.getLogger(WordlistFrameController.class.getName()).log(Level.SEVERE, null, ex);
+                return;
             }
+        }
+        try // try to get a valid file ffrom the user
+        {
+            JFileChooser chooser = new JFileChooser();
+            FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                    "GlosTrainer list files", "gtl");
+            chooser.setFileFilter(filter);
+            int returnVal = chooser.showOpenDialog(view.getFrame());
+            if (returnVal == JFileChooser.APPROVE_OPTION)
+            {
+                clearEntries();
+                model = WordlistModel.loadFromFile(chooser.getSelectedFile());
+                Logger.getLogger(WordlistFrame.class.getName()).log(Level.INFO, "Loaded file with {0} words.", model.getEntryCount());
+                populateTableFromModel();
+            }
+        } catch (IOException | ClassNotFoundException ex) // we didn't get a valid file
+        {
+            JOptionPane.showMessageDialog(view.getFrame(), "Something went wrong when loading the file.", "Error", JOptionPane.ERROR_MESSAGE);
+            Logger.getLogger(WordlistFrameController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -668,11 +674,17 @@ public class WordlistFrameController
     }
 
     /**
-     * Ask the user for confirmation to clear the word entries. If they confirm,
-     * invoke the <code>clearEntries()</code> method.
+     * If there are any words in the table, ask the user for confirmation to
+     * clear it. If they confirm, invoke the <code>clearEntries()</code> method.
+     * If the table is empty, this method does nothing.
      */
     public void tryClearEntries()
     {
+        if (model.getEntryCount() == 0)
+        {
+            return;
+        }
+
         int result = JOptionPane.showConfirmDialog(this.view.getFrame(),
                 "Are you sure you want to clear the table?",
                 "Warning",
@@ -698,35 +710,66 @@ public class WordlistFrameController
      * Shows a JFileChooser dialog for the user to select a destination and file
      * name for exporting the table to a file. The file extension
      * <code>.gtl</code> will be automatically appended to the file name if the
-     * user has not added it. The actual saving of the file is performed in the
-     * model's <code>saveToFile</code> method.
+     * user has not added it. If the user attempts to overwrite an existing
+     * file, a confirmation dialog is shown. If the user cancels the overwriting
+     * of the file, or an error occurred during saving, the JFileChooser is
+     * shown again until a successful save, or until the user closes the window.
+     * The actual saving of the file is performed in the model's
+     * <code>saveToFile</code> method.
      */
     public void tryExportList()
     {
-        try
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                "GlosTrainer list files", "gtl");
+        chooser.setFileFilter(filter);
+        while (true)
         {
-            JFileChooser chooser = new JFileChooser();
-            FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                    "GlosTrainer list files", "gtl");
-            chooser.setFileFilter(filter);
-            int result = chooser.showSaveDialog(view.getFrame());
-            if (result == JFileChooser.APPROVE_OPTION)
+            try
             {
-                File fileToBeSaved = chooser.getSelectedFile();
-
-                if (!chooser.getSelectedFile().getAbsolutePath().endsWith(".gtl"))
+                int saveFileResult = chooser.showSaveDialog(view.getFrame());
+                if (saveFileResult == JFileChooser.APPROVE_OPTION)
                 {
-                    fileToBeSaved = new File(chooser.getSelectedFile() + ".gtl");
+                    File fileToBeSaved = chooser.getSelectedFile();
+
+                    // see if we need to append .gtl
+                    if (!chooser.getSelectedFile().getAbsolutePath().endsWith(".gtl"))
+                    {
+                        fileToBeSaved = new File(chooser.getSelectedFile() + ".gtl");
+                    }
+
+                    // ask for confirmation to overwrite
+                    if (fileToBeSaved.exists())
+                    {
+                        int overWriteResult = JOptionPane.showConfirmDialog(view.getFrame(),
+                                String.format("<html>A file with the name %s exists already.<br/>Do you wish to overwrite it?", fileToBeSaved.getName()),
+                                "Overwrite",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.WARNING_MESSAGE);
+                        if (overWriteResult == JOptionPane.YES_OPTION)
+                        {
+                            model.saveToFile(fileToBeSaved);
+                            break;
+                        } else
+                        {
+                            chooser.setVisible(true);
+                        }
+                    }
+                } else // user has chosen cancel
+                {
+                    break;
                 }
-                model.saveToFile(fileToBeSaved);
+            } catch (IOException ex)
+            {
+                JOptionPane.showMessageDialog(view.getFrame(),
+                        "Couldn't save the file. The destination folder might be full or you don't have write access.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                Logger
+                        .getLogger(WordlistFrameController.class
+                                .getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (IOException ex)
-        {
-            JOptionPane.showMessageDialog(view.getFrame(),
-                    "Couldn't save the file. The destination folder might be full or you don't have write access.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(WordlistFrameController.class.getName()).log(Level.SEVERE, null, ex);
+
         }
     }
 
@@ -759,7 +802,7 @@ public class WordlistFrameController
         }
     }
 
-    // ACTIONS
+// ACTIONS
     /**
      * When the NewEntryAction is invoked, invoke the
      * <code>openNewEntryForm</code> method.
@@ -769,7 +812,7 @@ public class WordlistFrameController
 
         public NewEntryAction()
         {
-            super("New Entry");
+            super("New Entry...");
             putValue(SMALL_ICON, LibHelpers.getIconFromFileName("add.png"));
             putValue(SHORT_DESCRIPTION, "Opens a form for adding a new entry to the list.");
         }
@@ -790,7 +833,7 @@ public class WordlistFrameController
 
         public EditEntryAction()
         {
-            super("Edit Entry", LibHelpers.getIconFromFileName("edit.png"));
+            super("Edit Entry...", LibHelpers.getIconFromFileName("edit.png"));
             putValue(SHORT_DESCRIPTION, "Edits the selected entry from the list.");
         }
 
@@ -851,7 +894,7 @@ public class WordlistFrameController
         public ImportListAction()
         {
             super("Load...", LibHelpers.getIconFromFileName("upload.png"));
-            putValue(SHORT_DESCRIPTION, "Pick a file to open the list from.");
+            putValue(SHORT_DESCRIPTION, "Opens a file chooser dialog for you to select a file to load the word list from.");
         }
 
         @Override
