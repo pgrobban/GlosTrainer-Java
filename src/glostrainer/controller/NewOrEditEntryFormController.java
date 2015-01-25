@@ -96,6 +96,7 @@ public class NewOrEditEntryFormController
         view.getDictionaryFormField().setText("");
         view.getDefinitionField().setText("");
         view.setWordClassSpecificOptionalFields(WordClass.values()[0]);
+        view.getUserNotesTextArea().setText("");
 
         form.setVisible(true);
     }
@@ -133,6 +134,7 @@ public class NewOrEditEntryFormController
         view.getDictionaryFormField().setText(wordToEdit.getSwedishDictionaryForm());
         view.getDefinitionField().setText(wordToEdit.getDefinition());
         view.setWordClassSpecificOptionalFields(wordToEdit.getWordClass());
+        view.getUserNotesTextArea().setText(wordToEdit.getUserNotes());
 
         view.setOptionalFormTextFieldValues(wordToEdit.getOptionalForms());
         view.getFrame().setVisible(true);
