@@ -17,7 +17,7 @@ for a more robust and easy-to-overview structure.
 How to run the application:
 ------
 - Make sure you have Java 1.8 or higher installed.
-- Download, extract and run GlosTrainer.zip, then double-click on GlosTrainer.jar to run
+- Download, extract and run downloads/GlosTrainer.zip, then double-click on GlosTrainer.jar to run
 - The lib folder needs to be in the same folder as GlosTrainer.jar to make the icons visible
 
 GlosTrainer features:
