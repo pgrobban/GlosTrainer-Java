@@ -754,6 +754,10 @@ public class WordlistFrameController
                         {
                             chooser.setVisible(true);
                         }
+                    } else // no overwriting
+                    {
+                        model.saveToFile(fileToBeSaved);
+                        break;
                     }
                 } else // user has chosen cancel
                 {
