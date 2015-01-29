@@ -1,6 +1,6 @@
 package glostrainer.controller;
 
-import glostrainer.LibHelpers;
+import glostrainer.view.GUIHelpers;
 import glostrainer.model.NewOrEditEntryModel;
 import glostrainer.model.WordEntry;
 import glostrainer.model.WordClass;
@@ -78,7 +78,7 @@ public class NewOrEditEntryFormController
             this.view.getFrame().pack();
         });
         // patch the JTextArea so the Tab button can be used to change focus
-        LibHelpers.patchFocus(view.getUserNotesTextArea());
+        GUIHelpers.patchFocus(view.getUserNotesTextArea());
     }
 
     /**
@@ -191,7 +191,7 @@ public class NewOrEditEntryFormController
 
         public OkButtonAction()
         {
-            super("OK", LibHelpers.getIconFromFileName("ok.png"));
+            super("OK", GUIHelpers.getIconFromFileName("ok.png"));
             putValue(SHORT_DESCRIPTION, "Closes this dialog and saves the word into the list.");
         }
 
@@ -314,7 +314,7 @@ public class NewOrEditEntryFormController
 
         public CancelButtonAction()
         {
-            super("Cancel", LibHelpers.getIconFromFileName("delete.png"));
+            super("Cancel", GUIHelpers.getIconFromFileName("delete.png"));
             putValue(SHORT_DESCRIPTION, "Reverts all changes and closes this dialog.");
         }
 

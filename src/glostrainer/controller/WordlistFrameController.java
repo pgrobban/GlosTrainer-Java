@@ -1,6 +1,6 @@
 package glostrainer.controller;
 
-import glostrainer.LibHelpers;
+import glostrainer.view.GUIHelpers;
 import glostrainer.model.NewOrEditEntryModel;
 import glostrainer.model.WordEntry;
 import glostrainer.model.WordlistModel;
@@ -817,7 +817,7 @@ public class WordlistFrameController
         public NewEntryAction()
         {
             super("New Entry...");
-            putValue(SMALL_ICON, LibHelpers.getIconFromFileName("add.png"));
+            putValue(SMALL_ICON, GUIHelpers.getIconFromFileName("add.png"));
             putValue(SHORT_DESCRIPTION, "Opens a form for adding a new entry to the list.");
         }
 
@@ -837,7 +837,7 @@ public class WordlistFrameController
 
         public EditEntryAction()
         {
-            super("Edit Entry...", LibHelpers.getIconFromFileName("edit.png"));
+            super("Edit Entry...", GUIHelpers.getIconFromFileName("edit.png"));
             putValue(SHORT_DESCRIPTION, "Edits the selected entry from the list.");
         }
 
@@ -857,7 +857,7 @@ public class WordlistFrameController
 
         public DeleteEntryAction()
         {
-            super("Delete Entry", LibHelpers.getIconFromFileName("delete.png"));
+            super("Delete Entry", GUIHelpers.getIconFromFileName("delete.png"));
             putValue(SHORT_DESCRIPTION, "Deletes the selected entry/entries from the list.");
         }
 
@@ -877,7 +877,7 @@ public class WordlistFrameController
 
         public ClearListAction()
         {
-            super("Clear table", LibHelpers.getIconFromFileName("trash.png"));
+            super("Clear table", GUIHelpers.getIconFromFileName("trash.png"));
             putValue(SHORT_DESCRIPTION, "Clears the list.");
         }
 
@@ -897,7 +897,7 @@ public class WordlistFrameController
 
         public ImportListAction()
         {
-            super("Load...", LibHelpers.getIconFromFileName("upload.png"));
+            super("Load...", GUIHelpers.getIconFromFileName("upload.png"));
             putValue(SHORT_DESCRIPTION, "Opens a file chooser dialog for you to select a file to load the word list from.");
         }
 
@@ -917,7 +917,7 @@ public class WordlistFrameController
 
         public ExportListAction()
         {
-            super("Save...", LibHelpers.getIconFromFileName("download.png"));
+            super("Save...", GUIHelpers.getIconFromFileName("download.png"));
             putValue(SHORT_DESCRIPTION, "Save the list to a file.");
         }
 
@@ -937,7 +937,7 @@ public class WordlistFrameController
 
         public PrintListAction()
         {
-            super("Print...", LibHelpers.getIconFromFileName("print.png"));
+            super("Print...", GUIHelpers.getIconFromFileName("print.png"));
             putValue(SHORT_DESCRIPTION, "Opens the system's dialog for printing the list.");
         }
 

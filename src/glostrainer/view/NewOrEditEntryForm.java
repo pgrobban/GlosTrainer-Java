@@ -6,15 +6,16 @@ import java.util.LinkedHashMap;
 import javax.swing.*;
 import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
+import javax.swing.text.JTextComponent;
 
 /**
  * A form for adding a new word or editing an existing word in the
  * WordlistFrame. The class does provide a method <code>getFrame()</code> to
  * retrieve the underlying dialog; however, this is intended to be used for the
  * controller to open, close and change the mode (new/edit) of the form, so we
- * do not perform any window manipulations here.
- * The class exposes methods for getting the JTextFields and JComboBox for 
- * retreiving the user's entered values.
+ * do not perform any window manipulations here. The class exposes methods for
+ * getting the JTextFields and JComboBox for retreiving the user's entered
+ * values.
  *
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
@@ -40,12 +41,13 @@ public class NewOrEditEntryForm
 
         initComponents();
         initLayout();
+        bindEditEventsToTextComponents();
 
         dialog.pack();
     }
 
     /**
-     * A reference to the
+     * A reference to the frame to expose methods for window manipulation.
      *
      * @return
      */
@@ -81,6 +83,14 @@ public class NewOrEditEntryForm
 
         okButton = new JButton();
         cancelButton = new JButton();
+    }
+
+    private void bindEditEventsToTextComponents()
+    {
+        GUIHelpers.getAllComponents(dialog).stream().filter((c) -> (c instanceof JTextComponent)).forEach((c) ->
+        {
+            GUIHelpers.bindEditEvents((JTextComponent) c);
+        }); 
     }
 
     private void initLayout()
@@ -212,9 +222,10 @@ public class NewOrEditEntryForm
     }
 
     /**
-     * Clears <code>optionalFieldsPanel</code> and dynamically generates JLabels 
+     * Clears <code>optionalFieldsPanel</code> and dynamically generates JLabels
      * and JTextFields to add in the panel that correspond to the optional forms
      * from the given word class.
+     *
      * @param currentWordClass
      */
     public void setWordClassSpecificOptionalFields(WordClass currentWordClass)
@@ -263,14 +274,16 @@ public class NewOrEditEntryForm
                     .addComponent(optionalWordFormsTextFields.get(key)));
         }
         optionalFieldsLayout.setVerticalGroup(topToBottom);
+        bindEditEventsToTextComponents();
     }
-    
+
     /**
      * Sets the values of the optional form text fields from the given
      * LinkedHashMap. If the corresponding JTextfield does not exist, i.e. if
-     * the optional form has changed from an earlier version of this application, 
-     * show an alert to the user to update the entry.
-     * @param input 
+     * the optional form has changed from an earlier version of this
+     * application, show an alert to the user to update the entry.
+     *
+     * @param input
      */
     public void setOptionalFormTextFieldValues(LinkedHashMap<String, String> input)
     {
