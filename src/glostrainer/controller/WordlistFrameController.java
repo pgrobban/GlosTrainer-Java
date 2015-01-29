@@ -390,15 +390,15 @@ public class WordlistFrameController implements IController
      */
     public void openNewEntryForm()
     {
-        mainController.newOrEditEntryFormController.openNewEntryForm();
-        if (mainController.newOrEditEntryFormController.wordEntryWasSaved)
+        mainController.getNewOrEditEntryFormController().openNewEntryForm();
+        if (mainController.getNewOrEditEntryFormController().wordEntryWasSaved)
         {
             /* 
              * Copy the word to our model. we can't simply have a reference to the saved word,
              * because then we will run into trouble when adding or deleting words as
              * it will always point to the latest word.
              */
-            WordEntry wordToAdd = new WordEntry(mainController.newOrEditEntryFormController.getCurrentWordEntry());
+            WordEntry wordToAdd = new WordEntry(mainController.getNewOrEditEntryFormController().getCurrentWordEntry());
             this.model.addWordEntry(wordToAdd);
             addTableRowFromWord(wordToAdd);
             // because the NewLineTable will add an empty line for us, we don't need to add an empty row here
@@ -447,10 +447,10 @@ public class WordlistFrameController implements IController
          */
         int selectedIndexInModel = view.getWordlistTable().convertRowIndexToModel(selectedIndexInView);
 
-        mainController.newOrEditEntryFormController.openEditEntryFrame(this.model.getWordEntryAtIndex(selectedIndexInModel));
-        if (mainController.newOrEditEntryFormController.wordEntryWasSaved)
+        mainController.getNewOrEditEntryFormController().openEditEntryFrame(this.model.getWordEntryAtIndex(selectedIndexInModel));
+        if (mainController.getNewOrEditEntryFormController().wordEntryWasSaved)
         {
-            WordEntry savedWord = mainController.newOrEditEntryFormController.getCurrentWordEntry();
+            WordEntry savedWord = mainController.getNewOrEditEntryFormController().getCurrentWordEntry();
             this.model.replaceWordEntryAtIndex(selectedIndexInModel, savedWord);
 
             // edit table entry
