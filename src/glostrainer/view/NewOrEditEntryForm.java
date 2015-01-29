@@ -19,10 +19,10 @@ import javax.swing.text.JTextComponent;
  *
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
-public class NewOrEditEntryForm
+public class NewOrEditEntryForm implements IView
 {
 
-    private final JDialog dialog;
+    private JDialog dialog;
 
     /**
      * Creates a NewOrEditEntryFrame which is overlaid and acts as a modal
@@ -33,17 +33,18 @@ public class NewOrEditEntryForm
      */
     public NewOrEditEntryForm(JFrame ownerFrame)
     {
-        dialog = new JDialog(ownerFrame, true);
         SwingUtilities.invokeLater(() ->
         {
+            dialog = new JDialog(ownerFrame, true);
+
+            initComponents();
+            initLayout();
+            bindEditEventsToTextComponents();
+
+            dialog.pack();
             dialog.setLocationRelativeTo(ownerFrame);
+
         });
-
-        initComponents();
-        initLayout();
-        bindEditEventsToTextComponents();
-
-        dialog.pack();
     }
 
     /**
@@ -90,7 +91,7 @@ public class NewOrEditEntryForm
         GUIHelpers.getAllComponents(dialog).stream().filter((c) -> (c instanceof JTextComponent)).forEach((c) ->
         {
             GUIHelpers.bindEditEvents((JTextComponent) c);
-        }); 
+        });
     }
 
     private void initLayout()

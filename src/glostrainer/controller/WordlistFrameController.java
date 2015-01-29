@@ -1,10 +1,8 @@
 package glostrainer.controller;
 
 import glostrainer.view.GUIHelpers;
-import glostrainer.model.NewOrEditEntryModel;
 import glostrainer.model.WordEntry;
 import glostrainer.model.WordlistModel;
-import glostrainer.view.NewOrEditEntryForm;
 import glostrainer.view.WordlistFrame;
 import static glostrainer.view.WordlistFrame.DEFINITION_COLUMN;
 import static glostrainer.view.WordlistFrame.OPTIONAL_FORMS_COLUMN;
@@ -58,16 +56,10 @@ import javax.swing.table.TableRowSorter;
  *
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
-public class WordlistFrameController
+public class WordlistFrameController implements IController
 {
 
-    /**
-     * Since the table view in the GUI cannot be manipulated directly, the
-     * <code>WordListFrameController</code> class manages a
-     * <code>NewOrEditEntryFormController</code> instance to manipulate dialogs
-     * for the user to create or edit word entries.
-     */
-    private NewOrEditEntryFormController newOrEditEntryFormController;
+    private MainController mainController;
 
     /**
      *
@@ -82,24 +74,26 @@ public class WordlistFrameController
     /**
      * Creates a new WordlistFrameController with the given model and view.
      *
+     * @param mainController
      * @param model
      * @param view
      */
-    public WordlistFrameController(WordlistModel model, WordlistFrame view)
+    public WordlistFrameController(MainController mainController, WordlistModel model, WordlistFrame view)
     {
+        this.mainController = mainController;
         this.model = model;
         this.view = view;
 
         SwingUtilities.invokeLater(() ->
         {
-            this.newOrEditEntryFormController = new NewOrEditEntryFormController(
-                    new NewOrEditEntryModel(),
-                    new NewOrEditEntryForm(this.view.getFrame())
-            );
-
             setupViewEvents();
-            this.view.getFrame().setVisible(true);
         });
+    }
+
+    @Override
+    public WordlistFrame getView()
+    {
+        return this.view;
     }
 
     /**
@@ -396,15 +390,15 @@ public class WordlistFrameController
      */
     public void openNewEntryForm()
     {
-        this.newOrEditEntryFormController.openNewEntryForm();
-        if (this.newOrEditEntryFormController.wordEntryWasSaved)
+        mainController.newOrEditEntryFormController.openNewEntryForm();
+        if (mainController.newOrEditEntryFormController.wordEntryWasSaved)
         {
             /* 
              * Copy the word to our model. we can't simply have a reference to the saved word,
              * because then we will run into trouble when adding or deleting words as
              * it will always point to the latest word.
              */
-            WordEntry wordToAdd = new WordEntry(this.newOrEditEntryFormController.getCurrentWordEntry());
+            WordEntry wordToAdd = new WordEntry(mainController.newOrEditEntryFormController.getCurrentWordEntry());
             this.model.addWordEntry(wordToAdd);
             addTableRowFromWord(wordToAdd);
             // because the NewLineTable will add an empty line for us, we don't need to add an empty row here
@@ -453,10 +447,10 @@ public class WordlistFrameController
          */
         int selectedIndexInModel = view.getWordlistTable().convertRowIndexToModel(selectedIndexInView);
 
-        this.newOrEditEntryFormController.openEditEntryFrame(this.model.getWordEntryAtIndex(selectedIndexInModel));
-        if (this.newOrEditEntryFormController.wordEntryWasSaved)
+        mainController.newOrEditEntryFormController.openEditEntryFrame(this.model.getWordEntryAtIndex(selectedIndexInModel));
+        if (mainController.newOrEditEntryFormController.wordEntryWasSaved)
         {
-            WordEntry savedWord = this.newOrEditEntryFormController.getCurrentWordEntry();
+            WordEntry savedWord = mainController.newOrEditEntryFormController.getCurrentWordEntry();
             this.model.replaceWordEntryAtIndex(selectedIndexInModel, savedWord);
 
             // edit table entry

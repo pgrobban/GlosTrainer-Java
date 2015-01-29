@@ -1,23 +1,23 @@
 package glostrainer;
 
-import glostrainer.controller.WordlistFrameController;
-import glostrainer.model.WordlistModel;
-import glostrainer.view.WordlistFrame;
+import glostrainer.controller.MainController;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  * The main class for the application.
+ *
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
 public class Main
 {
 
     /**
-     * The starting point of the application. Sets the default Java Swing
-     * Look & Feel to Nimbus, if it exists. Then, initializes the main 
-     * controller for the application.
+     * The starting point of the application. Sets the default Java Swing Look &
+     * Feel to Nimbus, if it exists. Then, initializes the main controller for
+     * the application.
+     *
      * @param args the command line arguments
      */
     public static void main(String[] args)
@@ -36,12 +36,8 @@ public class Main
         {
             // If Nimbus is not available, set the GUI to another look and feel
         }
-        
-        // create the main controller
-        new WordlistFrameController(
-                new WordlistModel(), 
-                new WordlistFrame());
 
+        MainController mc = new MainController();
     }
 
 }

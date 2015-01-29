@@ -4,6 +4,7 @@ import glostrainer.view.GUIHelpers;
 import glostrainer.model.NewOrEditEntryModel;
 import glostrainer.model.WordEntry;
 import glostrainer.model.WordClass;
+import glostrainer.view.IView;
 import glostrainer.view.NewOrEditEntryForm;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
@@ -28,8 +29,10 @@ import javax.swing.SwingUtilities;
  *
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
-public class NewOrEditEntryFormController
+public class NewOrEditEntryFormController implements IController
 {
+
+    private MainController mainController;
 
     /**
      * The model here represents the entered data from the GUI's JTextFiedls
@@ -43,7 +46,7 @@ public class NewOrEditEntryFormController
     private final NewOrEditEntryForm view;
     /**
      * Sets a flag to determine if the word entry was saved, e.g. when the user
-     * has clicked the OK button. Use thhis flag to determine wether to update
+     * has clicked the OK button. Use this flag to determine wether to update
      * the model after the form has been closed or not.
      */
     protected boolean wordEntryWasSaved;
@@ -51,14 +54,20 @@ public class NewOrEditEntryFormController
     /**
      * Creates a new NewOrEditFrameController with the given model and view.
      *
+     * @param mainController
      * @param model
      * @param view
      */
-    public NewOrEditEntryFormController(NewOrEditEntryModel model, NewOrEditEntryForm view)
+    public NewOrEditEntryFormController(MainController mainController,
+            NewOrEditEntryModel model, NewOrEditEntryForm view)
     {
+        this.mainController = mainController;
         this.model = model;
         this.view = view;
-        initComponents();
+        SwingUtilities.invokeLater(() ->
+        {
+            initComponents();
+        });
     }
 
     /**
@@ -97,7 +106,7 @@ public class NewOrEditEntryFormController
         view.getDefinitionField().setText("");
         view.setWordClassSpecificOptionalFields(WordClass.values()[0]);
         view.getUserNotesTextArea().setText("");
-
+        
         form.setVisible(true);
     }
 
@@ -126,9 +135,8 @@ public class NewOrEditEntryFormController
         //System.out.println("Opening Edit Entry Frame with " + wordToEdit);
         this.wordEntryWasSaved = false;
 
-        JDialog frame = view.getFrame();
-        frame.setTitle("Edit Entry");
-        frame.setLocationRelativeTo(null);
+        JDialog form = view.getFrame();
+        form.setTitle("Edit Entry");
 
         view.getWordClassComboBox().setSelectedItem(wordToEdit.getWordClass());
         view.getDictionaryFormField().setText(wordToEdit.getSwedishDictionaryForm());
@@ -137,7 +145,14 @@ public class NewOrEditEntryFormController
         view.getUserNotesTextArea().setText(wordToEdit.getUserNotes());
 
         view.setOptionalFormTextFieldValues(wordToEdit.getOptionalForms());
-        view.getFrame().setVisible(true);
+
+        form.setVisible(true);
+    }
+
+    @Override
+    public NewOrEditEntryForm getView()
+    {
+        return this.view;
     }
 
     /**

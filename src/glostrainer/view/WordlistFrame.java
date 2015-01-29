@@ -11,7 +11,7 @@ import javax.swing.table.DefaultTableModel;
  * the buttons and other components in the GUI.
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
-public class WordlistFrame
+public class WordlistFrame implements IView
 {
 
     private JFrame frame;
@@ -34,7 +34,6 @@ public class WordlistFrame
             initComponents();
             frame.setVisible(true);
         });
-
     }
 
     private void initFrame()
