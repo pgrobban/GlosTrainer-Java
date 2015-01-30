@@ -95,6 +95,12 @@ public class WordlistFrameController implements IController
     {
         return this.view;
     }
+    
+    @Override
+    public WordlistModel getModel()
+    {
+        return this.model;
+    }
 
     /**
      * Set actions and listeners for the view. The New Entry button gets the

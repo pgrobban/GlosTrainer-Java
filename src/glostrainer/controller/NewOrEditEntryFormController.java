@@ -4,7 +4,6 @@ import glostrainer.view.GUIHelpers;
 import glostrainer.model.NewOrEditEntryModel;
 import glostrainer.model.WordEntry;
 import glostrainer.model.WordClass;
-import glostrainer.view.IView;
 import glostrainer.view.NewOrEditEntryForm;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
@@ -153,6 +152,12 @@ public class NewOrEditEntryFormController implements IController
     public NewOrEditEntryForm getView()
     {
         return this.view;
+    }
+    
+    @Override
+    public NewOrEditEntryModel getModel()
+    {
+        return this.model;
     }
 
     /**

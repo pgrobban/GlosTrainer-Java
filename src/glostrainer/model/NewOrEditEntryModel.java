@@ -7,7 +7,7 @@ package glostrainer.model;
  * a word entry or clicked OK to saving a new word entry in the view.
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
-public class NewOrEditEntryModel 
+public class NewOrEditEntryModel implements IModel
 {
     /**
      * 

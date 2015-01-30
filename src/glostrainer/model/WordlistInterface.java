@@ -5,7 +5,7 @@ package glostrainer.model;
  * The interface is supposed to resemble a CRUD (Create, Read, Update, Delete) one.
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
-public interface WordlistInterface
+public interface WordlistInterface extends IModel
 {
   
     /**

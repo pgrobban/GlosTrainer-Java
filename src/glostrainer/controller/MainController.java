@@ -6,9 +6,10 @@ import glostrainer.view.NewOrEditEntryForm;
 import glostrainer.view.WordlistFrame;
 
 /**
- *
+ * Main controller for all controllers.
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
+//TODO: make this more useful/clean
 public class MainController
 {
 
@@ -18,10 +19,12 @@ public class MainController
 
     public MainController()
     {
-        this.wordlistController = new WordlistFrameController(this,
+        this.wordlistController = new WordlistFrameController(
+                this,
                 new WordlistModel(),
                 new WordlistFrame());
-        this.newOrEditEntryFormController = new NewOrEditEntryFormController(this, 
+        this.newOrEditEntryFormController = new NewOrEditEntryFormController(
+                this, 
                 new NewOrEditEntryModel(),
                 new NewOrEditEntryForm(this.wordlistController.getView().getFrame())
         );
