@@ -3,10 +3,11 @@ package glostrainer.controller;
 import glostrainer.view.GUIHelpers;
 import glostrainer.model.WordEntry;
 import glostrainer.model.WordlistModel;
+import glostrainer.view.EditWordlistPanel;
 import glostrainer.view.WordlistFrame;
-import static glostrainer.view.WordlistFrame.DEFINITION_COLUMN;
-import static glostrainer.view.WordlistFrame.OPTIONAL_FORMS_COLUMN;
-import static glostrainer.view.WordlistFrame.SWEDISH_DICTIONARY_FORM_COLUMN;
+import static glostrainer.view.EditWordlistPanel.DEFINITION_COLUMN;
+import static glostrainer.view.EditWordlistPanel.OPTIONAL_FORMS_COLUMN;
+import static glostrainer.view.EditWordlistPanel.SWEDISH_DICTIONARY_FORM_COLUMN;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
@@ -72,7 +73,7 @@ public class WordlistFrameController implements IController
     private WordlistFrame view;
 
     /**
-     * Creates a new WordlistFrameController with the given model and view.
+     * Creates a new WordlistFrameController with the given model and view.getEditWordlistTab().
      *
      * @param mainController
      * @param model
@@ -103,16 +104,16 @@ public class WordlistFrameController implements IController
     }
 
     /**
-     * Set actions and listeners for the view. The New Entry button gets the
+     * Set actions and listeners for the view.getEditWordlistTab(). The New Entry button gets the
      * first focus. Edit Entry and Delete Entry will be disabled at first since
      * we assume that no row, or the empty row is selected at first.
      */
     private void setupViewEvents()
     {
         setupActions();
-        this.view.getNewEntryButton().requestFocus();
-        this.view.getEditEntryButton().setEnabled(false);
-        this.view.getDeleteEntryButton().setEnabled(false);
+        this.view.getEditWordlistTab().getNewEntryButton().requestFocus();
+        this.view.getEditWordlistTab().getEditEntryButton().setEnabled(false);
+        this.view.getEditWordlistTab().getDeleteEntryButton().setEnabled(false);
 
         setupWindowClosingConfirmationEvent();
 
@@ -130,14 +131,14 @@ public class WordlistFrameController implements IController
     private void setupActions()
     {
         // entry panel
-        this.view.getNewEntryButton().setAction(new NewEntryAction());
-        this.view.getEditEntryButton().setAction(new EditEntryAction());
-        this.view.getDeleteEntryButton().setAction(new DeleteEntryAction());
+        this.view.getEditWordlistTab().getNewEntryButton().setAction(new NewEntryAction());
+        this.view.getEditWordlistTab().getEditEntryButton().setAction(new EditEntryAction());
+        this.view.getEditWordlistTab().getDeleteEntryButton().setAction(new DeleteEntryAction());
         // list panel
-        this.view.getImportButton().setAction(new ImportListAction());
-        this.view.getExportButton().setAction(new ExportListAction());
-        this.view.getPrintListButton().setAction(new PrintListAction());
-        this.view.getClearListButton().setAction(new ClearListAction());
+        this.view.getEditWordlistTab().getImportButton().setAction(new ImportListAction());
+        this.view.getEditWordlistTab().getExportButton().setAction(new ExportListAction());
+        this.view.getEditWordlistTab().getPrintListButton().setAction(new PrintListAction());
+        this.view.getEditWordlistTab().getClearListButton().setAction(new ClearListAction());
     }
 
     /**
@@ -150,8 +151,8 @@ public class WordlistFrameController implements IController
      */
     private void setupTableSorter()
     {
-        TableRowSorter<TableModel> sorter = new TableRowSorter<>(view.getWordlistTable().getModel());
-        view.getWordlistTable().setRowSorter(sorter);
+        TableRowSorter<TableModel> sorter = new TableRowSorter<>(view.getEditWordlistTab().getWordlistTable().getModel());
+        view.getEditWordlistTab().getWordlistTable().setRowSorter(sorter);
 
         try
         {
@@ -163,7 +164,7 @@ public class WordlistFrameController implements IController
             {
                 return ruleBasedCollator.compare(o1.toLowerCase(), o2.toLowerCase());
             };
-            for (int i = 0; i < view.getWordlistTable().getColumnCount(); i++)
+            for (int i = 0; i < view.getEditWordlistTab().getWordlistTable().getColumnCount(); i++)
             {
                 sorter.setComparator(i, swedishComparator);
             }
@@ -200,19 +201,19 @@ public class WordlistFrameController implements IController
             public boolean include(RowFilter.Entry entry)
             {
                 // if the search string is empty, return true for everything
-                String textToLookFor = view.getFilterField().getText();
+                String textToLookFor = view.getEditWordlistTab().getFilterField().getText();
                 if (textToLookFor.equals(""))
                 {
                     return true;
                 }
 
-                if (!view.getExactMatchCheckButton().isSelected())
+                if (!view.getEditWordlistTab().getExactMatchCheckButton().isSelected())
                 {
                     boolean wordIsInDictionaryFormOrDefinitionColumn
                             = entry.getStringValue(SWEDISH_DICTIONARY_FORM_COLUMN).contains(textToLookFor)
                             || entry.getStringValue(DEFINITION_COLUMN).contains(textToLookFor);
 
-                    if (!view.getAllFormsCheckButton().isSelected())
+                    if (!view.getEditWordlistTab().getAllFormsCheckButton().isSelected())
                     {
                         return wordIsInDictionaryFormOrDefinitionColumn;
                     } else // all forms
@@ -230,7 +231,7 @@ public class WordlistFrameController implements IController
                             = entry.getStringValue(SWEDISH_DICTIONARY_FORM_COLUMN).equalsIgnoreCase(textToLookFor)
                             || entry.getStringValue(DEFINITION_COLUMN).equalsIgnoreCase(textToLookFor);
 
-                    if (!view.getAllFormsCheckButton().isSelected())
+                    if (!view.getEditWordlistTab().getAllFormsCheckButton().isSelected())
                     {
                         return wordIsInDictionaryFormOrDefinitionColumn;
                     } else // all forms
@@ -254,7 +255,7 @@ public class WordlistFrameController implements IController
                 }
             }
         };
-        TableRowSorter sorter = (TableRowSorter) view.getWordlistTable().getRowSorter();
+        TableRowSorter sorter = (TableRowSorter) view.getEditWordlistTab().getWordlistTable().getRowSorter();
         sorter.setRowFilter(rf);
     }
 
@@ -266,10 +267,10 @@ public class WordlistFrameController implements IController
      */
     private void setupFilterFieldListener()
     {
-        TableRowSorter sorter = (TableRowSorter) view.getWordlistTable().getRowSorter();
+        TableRowSorter sorter = (TableRowSorter) view.getEditWordlistTab().getWordlistTable().getRowSorter();
         RowFilter rf = sorter.getRowFilter();
 
-        this.view.getFilterField().getDocument().addDocumentListener(
+        this.view.getEditWordlistTab().getFilterField().getDocument().addDocumentListener(
                 new DocumentListener()
                 {
                     @Override
@@ -301,29 +302,29 @@ public class WordlistFrameController implements IController
      */
     private void setupTableSelectionChangedListener()
     {
-        JTable table = view.getWordlistTable();
+        JTable table = view.getEditWordlistTab().getWordlistTable();
         // enable/disable edit and delete buttons dependin
         DefaultListSelectionModel listSelectionModel = (DefaultListSelectionModel) table.getSelectionModel();
         listSelectionModel.addListSelectionListener((ListSelectionEvent e) ->
         {
             if (table.getSelectedRowCount() == 0)
             {
-                view.getEditEntryButton().setEnabled(false);
-                view.getDeleteEntryButton().setEnabled(false);
+                view.getEditWordlistTab().getEditEntryButton().setEnabled(false);
+                view.getEditWordlistTab().getDeleteEntryButton().setEnabled(false);
             } else
             {
                 if (table.getSelectedRows()[0] == table.getRowCount() - 1)
                 {
-                    view.getEditEntryButton().setEnabled(false);
-                    view.getDeleteEntryButton().setEnabled(false);
+                    view.getEditWordlistTab().getEditEntryButton().setEnabled(false);
+                    view.getEditWordlistTab().getDeleteEntryButton().setEnabled(false);
                 } else
                 {
-                    view.getEditEntryButton().setEnabled(true);
-                    view.getDeleteEntryButton().setEnabled(true);
+                    view.getEditWordlistTab().getEditEntryButton().setEnabled(true);
+                    view.getEditWordlistTab().getDeleteEntryButton().setEnabled(true);
                 }
             }
         });
-        this.view.getWordlistTable().addMouseListener(new WordlistTableDoubleClickListener());
+        this.view.getEditWordlistTab().getWordlistTable().addMouseListener(new WordlistTableDoubleClickListener());
     }
 
     /**
@@ -333,7 +334,7 @@ public class WordlistFrameController implements IController
      */
     private JTable setupTableKeyListener()
     {
-        final JTable table = this.view.getWordlistTable();
+        final JTable table = this.view.getEditWordlistTab().getWordlistTable();
         table.addKeyListener(new KeyAdapter()
         {
 
@@ -351,7 +352,7 @@ public class WordlistFrameController implements IController
                      */
                     case KeyEvent.VK_SPACE:
                     case KeyEvent.VK_ENTER:
-                        if (view.getWordlistTable().getSelectedRows()[0] == model.getEntryCount())
+                        if (view.getEditWordlistTab().getWordlistTable().getSelectedRows()[0] == model.getEntryCount())
                         {
                             openNewEntryForm();
                         } else
@@ -392,7 +393,7 @@ public class WordlistFrameController implements IController
     /**
      * Requests the newOrEditEntryFormController to open a New Entry form. If
      * the user accepts the new entry, we ask the controller for the saved entry
-     * and add it to our model and update the view.
+     * and add it to our model and update the view.getEditWordlistTab().
      */
     public void openNewEntryForm()
     {
@@ -411,7 +412,7 @@ public class WordlistFrameController implements IController
 
             this.updateEntryCount();
             // reset filter so the user can see their new entry
-            view.getFilterField().setText("");
+            view.getEditWordlistTab().getFilterField().setText("");
         }
     }
 
@@ -423,7 +424,7 @@ public class WordlistFrameController implements IController
      */
     private void addTableRowFromWord(WordEntry word)
     {
-        DefaultTableModel tbm = (DefaultTableModel) this.view.getWordlistTable().getModel();
+        DefaultTableModel tbm = (DefaultTableModel) this.view.getEditWordlistTab().getWordlistTable().getModel();
         tbm.addRow(new String[]
         {
             word.getSwedishDictionaryForm(),
@@ -435,9 +436,9 @@ public class WordlistFrameController implements IController
 
     /**
      * Requests the newOrEditEntryFormController to open an Edit Entry frame
-     * with the selected row index from the table view. Note that this may not
+     * with the selected row index from the table view.getEditWordlistTab(). Note that this may not
      * be the same index as the table model, so the call to this method might
-     * throw an exception if the selected index does not exist in the view.
+     * throw an exception if the selected index does not exist in the view.getEditWordlistTab().
      * Waits until the user has finished editing, and if the user confirms to
      * save the word, we replace the word in the model with the newly saved
      * word, and reset the filter to guarantee that the user will see the new
@@ -451,7 +452,7 @@ public class WordlistFrameController implements IController
          If the user has sorted or filtered the table, we need to convert the selected
          index from the view to the corresponding index in the model.
          */
-        int selectedIndexInModel = view.getWordlistTable().convertRowIndexToModel(selectedIndexInView);
+        int selectedIndexInModel = view.getEditWordlistTab().getWordlistTable().convertRowIndexToModel(selectedIndexInView);
 
         mainController.getNewOrEditEntryFormController().openEditEntryFrame(this.model.getWordEntryAtIndex(selectedIndexInModel));
         if (mainController.getNewOrEditEntryFormController().wordEntryWasSaved)
@@ -460,14 +461,14 @@ public class WordlistFrameController implements IController
             this.model.replaceWordEntryAtIndex(selectedIndexInModel, savedWord);
 
             // edit table entry
-            DefaultTableModel tableModel = (DefaultTableModel) view.getWordlistTable().getModel();
-            tableModel.setValueAt(savedWord.getSwedishDictionaryForm(), selectedIndexInModel, WordlistFrame.SWEDISH_DICTIONARY_FORM_COLUMN);
-            tableModel.setValueAt(savedWord.getDefinition(), selectedIndexInModel, WordlistFrame.DEFINITION_COLUMN);
-            tableModel.setValueAt(savedWord.getWordClass(), selectedIndexInModel, WordlistFrame.WORD_CLASS_COLUMN);
-            tableModel.setValueAt(savedWord.getOptionalFormsAsString(), selectedIndexInModel, WordlistFrame.OPTIONAL_FORMS_COLUMN);
+            DefaultTableModel tableModel = (DefaultTableModel) view.getEditWordlistTab().getWordlistTable().getModel();
+            tableModel.setValueAt(savedWord.getSwedishDictionaryForm(), selectedIndexInModel, EditWordlistPanel.SWEDISH_DICTIONARY_FORM_COLUMN);
+            tableModel.setValueAt(savedWord.getDefinition(), selectedIndexInModel, EditWordlistPanel.DEFINITION_COLUMN);
+            tableModel.setValueAt(savedWord.getWordClass(), selectedIndexInModel, EditWordlistPanel.WORD_CLASS_COLUMN);
+            tableModel.setValueAt(savedWord.getOptionalFormsAsString(), selectedIndexInModel, EditWordlistPanel.OPTIONAL_FORMS_COLUMN);
 
             // reset filter so the user can see their new entry
-            view.getFilterField().setText("");
+            view.getEditWordlistTab().getFilterField().setText("");
         }
     }
 
@@ -483,7 +484,7 @@ public class WordlistFrameController implements IController
     public void tryOpenEditEntryForm()
     {
         // Display an error if the user hasn't selected any rows, or more than one row.
-        JTable wordListTable = this.view.getWordlistTable();
+        JTable wordListTable = this.view.getEditWordlistTab().getWordlistTable();
         int[] selectedTableRowIndicesInView = wordListTable.getSelectedRows();
         if (selectedTableRowIndicesInView.length == 0)
         {
@@ -506,8 +507,8 @@ public class WordlistFrameController implements IController
      */
     public void tryDeleteEntries()
     {
-        int[] selectedIndices = this.view.getWordlistTable().getSelectedRows();
-        if (selectedIndices.length == 0 || selectedIndices[0] == this.view.getWordlistTable().getRowCount() - 1)
+        int[] selectedIndices = this.view.getEditWordlistTab().getWordlistTable().getSelectedRows();
+        if (selectedIndices.length == 0 || selectedIndices[0] == this.view.getEditWordlistTab().getWordlistTable().getRowCount() - 1)
         {
             JOptionPane.showMessageDialog(null, "No rows are selected.");
             return;
@@ -534,7 +535,7 @@ public class WordlistFrameController implements IController
      */
     public void deleteSelectedTableEntries()
     {
-        JTable table = this.view.getWordlistTable();
+        JTable table = this.view.getEditWordlistTab().getWordlistTable();
         int[] selectedIndices = table.getSelectedRows();
 
         // delete indexes in reverse order because we need to delete entries in the view's table
@@ -558,7 +559,7 @@ public class WordlistFrameController implements IController
     {
         this.model.removeWordEntryAtIndex(indexInModelToDelete);
         // delete table entry
-        DefaultTableModel tableModel = (DefaultTableModel) view.getWordlistTable().getModel();
+        DefaultTableModel tableModel = (DefaultTableModel) view.getEditWordlistTab().getWordlistTable().getModel();
         tableModel.removeRow(indexInModelToDelete);
         this.updateEntryCount();
     }
@@ -575,12 +576,12 @@ public class WordlistFrameController implements IController
         int filteredEntryCount = getFilteredRowCount();
         String filteredEntryOrEntries = (filteredEntryCount == 1) ? "entry" : "entries";
 
-        if (this.view.getFilterField().getText().equals("")) // are we filtering something?
+        if (this.view.getEditWordlistTab().getFilterField().getText().equals("")) // are we filtering something?
         {
-            this.view.getEntryCountLabel().setText(String.format("%d %s in list", totalEntryCount, entryOrEntries));
+            this.view.getEditWordlistTab().getEntryCountLabel().setText(String.format("%d %s in list", totalEntryCount, entryOrEntries));
         } else
         {
-            this.view.getEntryCountLabel().setText(String.format("%d %s in list, filtered %d %s in view", totalEntryCount, entryOrEntries, filteredEntryCount, filteredEntryOrEntries));
+            this.view.getEditWordlistTab().getEntryCountLabel().setText(String.format("%d %s in list, filtered %d %s in view", totalEntryCount, entryOrEntries, filteredEntryCount, filteredEntryOrEntries));
         }
     }
 
@@ -592,9 +593,9 @@ public class WordlistFrameController implements IController
     private int getFilteredRowCount()
     {
         int filteredRowCount = 0;
-        for (int i = 0; i < this.view.getWordlistTable().getModel().getRowCount(); i++)
+        for (int i = 0; i < this.view.getEditWordlistTab().getWordlistTable().getModel().getRowCount(); i++)
         {
-            if (this.view.getWordlistTable().convertRowIndexToView(i) != -1)
+            if (this.view.getEditWordlistTab().getWordlistTable().convertRowIndexToView(i) != -1)
             {
                 filteredRowCount++;
             }
@@ -670,7 +671,7 @@ public class WordlistFrameController implements IController
     {
         model.getAllWordsAsStream().sequential().forEach(word -> addTableRowFromWord(word));
         updateEntryCount();
-        view.getFilterField().setText("");
+        view.getEditWordlistTab().getFilterField().setText("");
     }
 
     /**
@@ -696,12 +697,12 @@ public class WordlistFrameController implements IController
     }
 
     /**
-     * Removes all words from the model and view.
+     * Removes all words from the model and view.getEditWordlistTab().
      */
     public void clearEntries()
     {
         this.model.clear();
-        DefaultTableModel tableModel = (DefaultTableModel) this.view.getWordlistTable().getModel();
+        DefaultTableModel tableModel = (DefaultTableModel) this.view.getEditWordlistTab().getWordlistTable().getModel();
         tableModel.setRowCount(0);
         this.updateEntryCount();
     }
@@ -946,7 +947,7 @@ public class WordlistFrameController implements IController
         {
             try
             {
-                view.getWordlistTable().print(PrintMode.FIT_WIDTH);
+                view.getEditWordlistTab().getWordlistTable().print(PrintMode.FIT_WIDTH);
             } catch (PrinterException ex)
             {
                 JOptionPane.showMessageDialog(view.getFrame(), "<html>Something went wrong while printing. Give this message to Robban:<br/>" + ex + "</html>");
