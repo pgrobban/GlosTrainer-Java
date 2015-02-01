@@ -25,7 +25,17 @@ import javax.swing.text.Keymap;
  */
 public class GUIHelpers
 {
-
+    
+    /**
+     * Indent size for GUI components in pixels.
+     */
+    public static int INDENT_SIZE = 8;
+    
+    /**
+     * Size for GUI checkboxes in pixels.
+     */
+    public static int CHECKBOX_SIZE = 20;
+    
     private GUIHelpers()
     {
     }

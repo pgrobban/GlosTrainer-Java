@@ -34,8 +34,8 @@ public class EditWordlistPanel extends JPanel
         filterTextField = new JTextField();
         exactMatchCheckBox = new JCheckBox("Exact match", true);
         allFormsCheckButton = new JCheckBox("Include opt. forms", true);
-        wordlistScrollPane = new JScrollPane();
         wordlistTable = new NewLineTable();
+        wordlistScrollPane = new JScrollPane(wordlistTable);
         bottomPanel = new JPanel();
         exportButton = new JButton();
         importButton = new JButton();
@@ -62,9 +62,9 @@ public class EditWordlistPanel extends JPanel
         allFormsCheckButton.setToolTipText("Search in all forms. If this is turned off, "
                 + "the search will only look for the Swedish Dictionary Forms and Definition fields.");
 
-        getWordlistTable().setRowSelectionAllowed(true);
-        getWordlistTable().setToolTipText(TABLE_TOOLTIP);
-        getWordlistTable().setModel(new DefaultTableModel(
+        wordlistTable.setRowSelectionAllowed(true);
+        wordlistTable.setToolTipText(TABLE_TOOLTIP);
+        wordlistTable.setModel(new DefaultTableModel(
                 new Object[][]
                 {
                 },
@@ -87,7 +87,6 @@ public class EditWordlistPanel extends JPanel
             }
         });
 
-        wordlistScrollPane.setViewportView(wordlistTable);
         //wordlistTable.setFillsViewportHeight(true);
         wordlistTable.getColumnModel().getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         wordlistTable.getColumnModel().getColumn(SWEDISH_DICTIONARY_FORM_COLUMN).setPreferredWidth(100);

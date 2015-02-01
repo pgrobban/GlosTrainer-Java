@@ -1,12 +1,16 @@
 package glostrainer.controller;
 
 import glostrainer.model.NewOrEditEntryModel;
+import glostrainer.model.QuizWordlistModel;
 import glostrainer.model.WordlistModel;
 import glostrainer.view.NewOrEditEntryForm;
-import glostrainer.view.WordlistFrame;
+import glostrainer.view.GUIFrame;
+import glostrainer.view.QuizWordlistPanel;
+import javax.swing.SwingUtilities;
 
 /**
  * Main controller for all controllers.
+ *
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
 //TODO: make this more useful/clean
@@ -17,17 +21,29 @@ public class MainController
 
     private final NewOrEditEntryFormController newOrEditEntryFormController;
 
+    private final QuizWordlistController quizWordlistController;
+
     public MainController()
     {
+
         this.wordlistController = new WordlistFrameController(
                 this,
                 new WordlistModel(),
-                new WordlistFrame());
+                new GUIFrame());
+        this.quizWordlistController = new QuizWordlistController(
+                new QuizWordlistModel(this.wordlistController.getModel()),
+                new QuizWordlistPanel());
+        SwingUtilities.invokeLater(() ->
+        {
+            this.wordlistController.getView().addQuizTab(this.quizWordlistController.getView());
+        });
+
         this.newOrEditEntryFormController = new NewOrEditEntryFormController(
-                this, 
+                this,
                 new NewOrEditEntryModel(),
                 new NewOrEditEntryForm(this.wordlistController.getView().getFrame())
         );
+
     }
 
     /**
@@ -44,6 +60,11 @@ public class MainController
     public NewOrEditEntryFormController getNewOrEditEntryFormController()
     {
         return newOrEditEntryFormController;
+    }
+    
+    public QuizWordlistController getQuizWordlistController()
+    {
+        return quizWordlistController;
     }
 
 }

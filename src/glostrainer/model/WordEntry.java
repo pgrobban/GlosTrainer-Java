@@ -181,6 +181,11 @@ public class WordEntry implements Serializable
             output.setLength(output.length()-2);
         return output.toString();
     }
+    
+    public String[] getOptionalFormsValuesAsArray()
+    {
+        return this.optionalForms.values().toArray(new String[this.optionalForms.size()]);
+    }
 
     /**
      * Sets the optional forms of this word entry.

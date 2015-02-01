@@ -4,7 +4,7 @@ import glostrainer.view.GUIHelpers;
 import glostrainer.model.WordEntry;
 import glostrainer.model.WordlistModel;
 import glostrainer.view.EditWordlistPanel;
-import glostrainer.view.WordlistFrame;
+import glostrainer.view.GUIFrame;
 import static glostrainer.view.EditWordlistPanel.DEFINITION_COLUMN;
 import static glostrainer.view.EditWordlistPanel.OPTIONAL_FORMS_COLUMN;
 import static glostrainer.view.EditWordlistPanel.SWEDISH_DICTIONARY_FORM_COLUMN;
@@ -47,7 +47,7 @@ import javax.swing.table.TableRowSorter;
  * In the MVC pattern, the controller facilitates the communication between the
  * user and the application. This class represents the main controller for the
  * application. It manages a GUI, which here is an instance of a
- * <code>WordlistFrame</code>, and a word list model class,
+ * <code>GUIFrame</code>, and a word list model class,
  * <code>WordlistModel</code>. The <code>WordlistFrameController</code> responds
  * to GUI events such as button clicks and key presses, and reacts accordingly.
  * Since the table view in the GUI cannot be manipulated directly, the
@@ -70,7 +70,7 @@ public class WordlistFrameController implements IController
     /**
      *
      */
-    private WordlistFrame view;
+    private GUIFrame view;
 
     /**
      * Creates a new WordlistFrameController with the given model and view.getEditWordlistTab().
@@ -79,7 +79,7 @@ public class WordlistFrameController implements IController
      * @param model
      * @param view
      */
-    public WordlistFrameController(MainController mainController, WordlistModel model, WordlistFrame view)
+    public WordlistFrameController(MainController mainController, WordlistModel model, GUIFrame view)
     {
         this.mainController = mainController;
         this.model = model;
@@ -92,7 +92,7 @@ public class WordlistFrameController implements IController
     }
 
     @Override
-    public WordlistFrame getView()
+    public GUIFrame getView()
     {
         return this.view;
     }
@@ -413,6 +413,9 @@ public class WordlistFrameController implements IController
             this.updateEntryCount();
             // reset filter so the user can see their new entry
             view.getEditWordlistTab().getFilterField().setText("");
+            
+            // add the new word to the quiz list
+            mainController.getQuizWordlistController().addWordEntryToQuizWordlist(wordToAdd);
         }
     }
 
@@ -469,6 +472,9 @@ public class WordlistFrameController implements IController
 
             // reset filter so the user can see their new entry
             view.getEditWordlistTab().getFilterField().setText("");
+            
+            // update quiz view
+            mainController.getQuizWordlistController().editWordEntryInQuizWordlist(selectedIndexInModel, savedWord);
         }
     }
 
@@ -562,6 +568,7 @@ public class WordlistFrameController implements IController
         DefaultTableModel tableModel = (DefaultTableModel) view.getEditWordlistTab().getWordlistTable().getModel();
         tableModel.removeRow(indexInModelToDelete);
         this.updateEntryCount();
+        mainController.getQuizWordlistController().deleteWordEntryAtIndex(indexInModelToDelete);
     }
 
     /**
@@ -650,7 +657,7 @@ public class WordlistFrameController implements IController
             {
                 clearEntries();
                 model = WordlistModel.loadFromFile(chooser.getSelectedFile());
-                Logger.getLogger(WordlistFrame.class.getName()).log(Level.INFO, "Loaded file with {0} words.", model.getEntryCount());
+                Logger.getLogger(GUIFrame.class.getName()).log(Level.INFO, "Loaded file with {0} words.", model.getEntryCount());
                 populateTableFromModel();
             }
         } catch (IOException | ClassNotFoundException ex) // we didn't get a valid file
@@ -669,7 +676,10 @@ public class WordlistFrameController implements IController
      */
     public void populateTableFromModel()
     {
-        model.getAllWordsAsStream().sequential().forEach(word -> addTableRowFromWord(word));
+        model.getAllWordsAsStream().sequential().forEach(word -> { 
+            addTableRowFromWord(word); 
+            mainController.getQuizWordlistController().addWordEntryToQuizWordlist(word);
+        });
         updateEntryCount();
         view.getEditWordlistTab().getFilterField().setText("");
     }

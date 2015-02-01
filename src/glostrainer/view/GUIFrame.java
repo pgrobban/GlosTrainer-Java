@@ -10,12 +10,12 @@ import javax.swing.*;
  *
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
-public class WordlistFrame implements IView
+public class GUIFrame implements IView
 {
 
     private JFrame frame;
 
-    public WordlistFrame()
+    public GUIFrame()
     {
         SwingUtilities.invokeLater(() ->
         {
@@ -38,18 +38,22 @@ public class WordlistFrame implements IView
         //desktop.add(newEditFrame.getFrame());
         frame.setContentPane(desktop);
 
-        frame.setMinimumSize(new Dimension(700, 500));
-        frame.setPreferredSize(new Dimension(850, 700));
+        frame.setMinimumSize(new Dimension(650, 500));
+        frame.setPreferredSize(new Dimension(800, 600));
     }
 
     private void initComponents()
     {
         editWordlistTab = new EditWordlistPanel();
-        appQuizTab = new QuizWordlistPanel();
         appTabbedPane = new JTabbedPane();
-        
-        appTabbedPane.addTab("Word list ", GUIHelpers.getIconFromFileName("edit-small.png"),  editWordlistTab);
-        appTabbedPane.addTab("Quiz ", GUIHelpers.getIconFromFileName("quiz.png"), appQuizTab);
+
+        appTabbedPane.addTab("Word list ", GUIHelpers.getIconFromFileName("edit.png"), editWordlistTab);
+    }
+
+    public void addQuizTab(QuizWordlistPanel p)
+    {
+        this.appQuizTab = p;
+        appTabbedPane.addTab("Quiz ", GUIHelpers.getIconFromFileName("quiz.png"), p);
     }
 
     private void initLayout()
