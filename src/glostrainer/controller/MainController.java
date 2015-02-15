@@ -34,11 +34,6 @@ public class MainController
                 this,
                 new QuizWordlistModel(this.wordlistController.getModel()),
                 new QuizWordlistPanel());
-        SwingUtilities.invokeLater(() ->
-        {
-            this.wordlistController.getView().addQuizTab(this.quizWordlistController.getView());
-        });
-
         this.newOrEditEntryFormController = new NewOrEditEntryFormController(
                 this,
                 new NewOrEditEntryModel(),
@@ -62,7 +57,7 @@ public class MainController
     {
         return newOrEditEntryFormController;
     }
-    
+
     public QuizWordlistController getQuizWordlistController()
     {
         return quizWordlistController;

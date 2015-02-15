@@ -3,11 +3,11 @@ package glostrainer.controller;
 import glostrainer.view.GUIHelpers;
 import glostrainer.model.WordEntry;
 import glostrainer.model.WordlistModel;
-import glostrainer.view.EditWordlistPanel;
+import glostrainer.view.WordlistPanel;
 import glostrainer.view.GUIFrame;
-import static glostrainer.view.EditWordlistPanel.DEFINITION_COLUMN;
-import static glostrainer.view.EditWordlistPanel.OPTIONAL_FORMS_COLUMN;
-import static glostrainer.view.EditWordlistPanel.SWEDISH_DICTIONARY_FORM_COLUMN;
+import static glostrainer.view.WordlistPanel.DEFINITION_COLUMN;
+import static glostrainer.view.WordlistPanel.OPTIONAL_FORMS_COLUMN;
+import static glostrainer.view.WordlistPanel.SWEDISH_DICTIONARY_FORM_COLUMN;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
@@ -73,7 +73,7 @@ public class WordlistFrameController implements IController
     private GUIFrame view;
 
     // keep a reference to the file chooser so we can retain information about last saved folder
-    JFileChooser chooser = new JFileChooser();
+    JFileChooser chooser;
 
     /**
      * Creates a new WordlistFrameController with the given model and
@@ -89,10 +89,8 @@ public class WordlistFrameController implements IController
         this.model = model;
         this.view = view;
 
-        SwingUtilities.invokeLater(() ->
-        {
-            setupViewEvents();
-        });
+        chooser = new JFileChooser();
+
     }
 
     @Override
@@ -474,10 +472,10 @@ public class WordlistFrameController implements IController
 
             // edit table entry
             DefaultTableModel tableModel = (DefaultTableModel) view.getEditWordlistTab().getWordlistTable().getModel();
-            tableModel.setValueAt(savedWord.getSwedishDictionaryForm(), selectedIndexInModel, EditWordlistPanel.SWEDISH_DICTIONARY_FORM_COLUMN);
-            tableModel.setValueAt(savedWord.getDefinition(), selectedIndexInModel, EditWordlistPanel.DEFINITION_COLUMN);
-            tableModel.setValueAt(savedWord.getWordClass(), selectedIndexInModel, EditWordlistPanel.WORD_CLASS_COLUMN);
-            tableModel.setValueAt(savedWord.getOptionalFormsAsString(), selectedIndexInModel, EditWordlistPanel.OPTIONAL_FORMS_COLUMN);
+            tableModel.setValueAt(savedWord.getSwedishDictionaryForm(), selectedIndexInModel, WordlistPanel.SWEDISH_DICTIONARY_FORM_COLUMN);
+            tableModel.setValueAt(savedWord.getDefinition(), selectedIndexInModel, WordlistPanel.DEFINITION_COLUMN);
+            tableModel.setValueAt(savedWord.getWordClass(), selectedIndexInModel, WordlistPanel.WORD_CLASS_COLUMN);
+            tableModel.setValueAt(savedWord.getOptionalFormsAsString(), selectedIndexInModel, WordlistPanel.OPTIONAL_FORMS_COLUMN);
 
             // reset filter so the user can see their new entry
             view.getEditWordlistTab().getFilterField().setText("");

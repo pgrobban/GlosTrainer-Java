@@ -1,9 +1,7 @@
 package glostrainer.view;
 
 import glostrainer.model.WordlistModel;
-import java.awt.Dimension;
 import java.awt.Font;
-import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;

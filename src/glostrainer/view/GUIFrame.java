@@ -35,7 +35,6 @@ public class GUIFrame implements IView
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JDesktopPane desktop = new JDesktopPane();
-        //desktop.add(newEditFrame.getFrame());
         frame.setContentPane(desktop);
 
         frame.setMinimumSize(new Dimension(650, 500));
@@ -44,16 +43,11 @@ public class GUIFrame implements IView
 
     private void initComponents()
     {
-        editWordlistTab = new EditWordlistPanel();
+        appWordlistTab = new WordlistPanel();
+        appQuizTab = new QuizWordlistPanel();
         appTabbedPane = new JTabbedPane();
-
-        appTabbedPane.addTab("Word list ", GUIHelpers.getIconFromFileName("edit.png"), editWordlistTab);
-    }
-
-    public void addQuizTab(QuizWordlistPanel p)
-    {
-        this.appQuizTab = p;
-        appTabbedPane.addTab("Quiz ", GUIHelpers.getIconFromFileName("quiz.png"), p);
+        appTabbedPane.addTab("Word list ", GUIHelpers.getIconFromFileName("edit.png"), appWordlistTab);
+        appTabbedPane.addTab("Quiz ", GUIHelpers.getIconFromFileName("quiz.png"), appQuizTab);
     }
 
     private void initLayout()
@@ -86,12 +80,12 @@ public class GUIFrame implements IView
         return this.frame;
     }
 
-    public EditWordlistPanel getEditWordlistTab()
+    public WordlistPanel getEditWordlistTab()
     {
-        return this.editWordlistTab;
+        return this.appWordlistTab;
     }
 
-    private EditWordlistPanel editWordlistTab;
+    private WordlistPanel appWordlistTab;
     private QuizWordlistPanel appQuizTab;
     private JTabbedPane appTabbedPane;
 

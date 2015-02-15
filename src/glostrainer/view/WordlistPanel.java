@@ -5,7 +5,7 @@ import java.awt.event.ItemEvent;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-public class EditWordlistPanel extends JPanel
+public class WordlistPanel extends JPanel
 {
 
     // word list table column indices
@@ -19,7 +19,7 @@ public class EditWordlistPanel extends JPanel
             + "To edit an entry, double-click on the corresponding row or select "
             + "the row with your mouse or keyboard and click the <i>Edit Entry</i> button.</html>";
 
-    public EditWordlistPanel()
+    public WordlistPanel()
     {
         SwingUtilities.invokeLater(() ->
         {
