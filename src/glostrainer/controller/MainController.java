@@ -31,6 +31,7 @@ public class MainController
                 new WordlistModel(),
                 new GUIFrame());
         this.quizWordlistController = new QuizWordlistController(
+                this,
                 new QuizWordlistModel(this.wordlistController.getModel()),
                 new QuizWordlistPanel());
         SwingUtilities.invokeLater(() ->

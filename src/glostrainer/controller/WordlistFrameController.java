@@ -72,8 +72,12 @@ public class WordlistFrameController implements IController
      */
     private GUIFrame view;
 
+    // keep a reference to the file chooser so we can retain information about last saved folder
+    JFileChooser chooser = new JFileChooser();
+
     /**
-     * Creates a new WordlistFrameController with the given model and view.getEditWordlistTab().
+     * Creates a new WordlistFrameController with the given model and
+     * view.getEditWordlistTab().
      *
      * @param mainController
      * @param model
@@ -96,7 +100,7 @@ public class WordlistFrameController implements IController
     {
         return this.view;
     }
-    
+
     @Override
     public WordlistModel getModel()
     {
@@ -104,9 +108,10 @@ public class WordlistFrameController implements IController
     }
 
     /**
-     * Set actions and listeners for the view.getEditWordlistTab(). The New Entry button gets the
-     * first focus. Edit Entry and Delete Entry will be disabled at first since
-     * we assume that no row, or the empty row is selected at first.
+     * Set actions and listeners for the view.getEditWordlistTab(). The New
+     * Entry button gets the first focus. Edit Entry and Delete Entry will be
+     * disabled at first since we assume that no row, or the empty row is
+     * selected at first.
      */
     private void setupViewEvents()
     {
@@ -123,6 +128,10 @@ public class WordlistFrameController implements IController
         setupTableSorter();
         setupTableRowFilter();
         setupFilterFieldListener();
+
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                "GlosTrainer list files", "gtl");
+        chooser.setFileFilter(filter);
     }
 
     /**
@@ -413,7 +422,7 @@ public class WordlistFrameController implements IController
             this.updateEntryCount();
             // reset filter so the user can see their new entry
             view.getEditWordlistTab().getFilterField().setText("");
-            
+
             // add the new word to the quiz list
             mainController.getQuizWordlistController().addWordEntryToQuizWordlist(wordToAdd);
         }
@@ -439,13 +448,13 @@ public class WordlistFrameController implements IController
 
     /**
      * Requests the newOrEditEntryFormController to open an Edit Entry frame
-     * with the selected row index from the table view.getEditWordlistTab(). Note that this may not
-     * be the same index as the table model, so the call to this method might
-     * throw an exception if the selected index does not exist in the view.getEditWordlistTab().
-     * Waits until the user has finished editing, and if the user confirms to
-     * save the word, we replace the word in the model with the newly saved
-     * word, and reset the filter to guarantee that the user will see the new
-     * word.
+     * with the selected row index from the table view.getEditWordlistTab().
+     * Note that this may not be the same index as the table model, so the call
+     * to this method might throw an exception if the selected index does not
+     * exist in the view.getEditWordlistTab(). Waits until the user has finished
+     * editing, and if the user confirms to save the word, we replace the word
+     * in the model with the newly saved word, and reset the filter to guarantee
+     * that the user will see the new word.
      *
      * @param selectedIndexInView
      */
@@ -472,7 +481,7 @@ public class WordlistFrameController implements IController
 
             // reset filter so the user can see their new entry
             view.getEditWordlistTab().getFilterField().setText("");
-            
+
             // update quiz view
             mainController.getQuizWordlistController().editWordEntryInQuizWordlist(selectedIndexInModel, savedWord);
         }
@@ -646,25 +655,27 @@ public class WordlistFrameController implements IController
                 return;
             }
         }
-        try // try to get a valid file ffrom the user
+
+        SwingUtilities.invokeLater(() ->
         {
-            JFileChooser chooser = new JFileChooser();
-            FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                    "GlosTrainer list files", "gtl");
-            chooser.setFileFilter(filter);
-            int returnVal = chooser.showOpenDialog(view.getFrame());
-            if (returnVal == JFileChooser.APPROVE_OPTION)
+            try // try to get a valid file from the user
             {
-                clearEntries();
-                model = WordlistModel.loadFromFile(chooser.getSelectedFile());
-                Logger.getLogger(GUIFrame.class.getName()).log(Level.INFO, "Loaded file with {0} words.", model.getEntryCount());
-                populateTableFromModel();
+                int returnVal = chooser.showOpenDialog(view.getFrame());
+                if (returnVal == JFileChooser.APPROVE_OPTION)
+                {
+                    clearEntries();
+                    model = WordlistModel.loadFromFile(chooser.getSelectedFile());
+                    Logger.getLogger(GUIFrame.class.getName()).log(Level.INFO, "Loaded file with {0} words.", model.getEntryCount());
+                    populateTableFromModel();
+                }
+
+            } catch (IOException | ClassNotFoundException ex) // we didn't get a valid file
+            {
+                JOptionPane.showMessageDialog(view.getFrame(), "Something went wrong when loading the file.", "Error", JOptionPane.ERROR_MESSAGE);
+                Logger.getLogger(WordlistFrameController.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (IOException | ClassNotFoundException ex) // we didn't get a valid file
-        {
-            JOptionPane.showMessageDialog(view.getFrame(), "Something went wrong when loading the file.", "Error", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(WordlistFrameController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        });
+
     }
 
     /**
@@ -676,8 +687,9 @@ public class WordlistFrameController implements IController
      */
     public void populateTableFromModel()
     {
-        model.getAllWordsAsStream().sequential().forEach(word -> { 
-            addTableRowFromWord(word); 
+        model.getAllWordsAsStream().sequential().forEach(word ->
+        {
+            addTableRowFromWord(word);
             mainController.getQuizWordlistController().addWordEntryToQuizWordlist(word);
         });
         updateEntryCount();
@@ -696,14 +708,18 @@ public class WordlistFrameController implements IController
             return;
         }
 
-        int result = JOptionPane.showConfirmDialog(this.view.getFrame(),
-                "Are you sure you want to clear the table?",
-                "Warning",
-                JOptionPane.WARNING_MESSAGE);
-        if (result == JOptionPane.YES_OPTION)
+        SwingUtilities.invokeLater(() ->
         {
-            clearEntries();
-        }
+            int result = JOptionPane.showConfirmDialog(this.view.getFrame(),
+                    "Are you sure you want to clear the table?",
+                    "Warning",
+                    JOptionPane.WARNING_MESSAGE);
+            if (result == JOptionPane.YES_OPTION)
+            {
+                clearEntries();
+            }
+        });
+
     }
 
     /**
@@ -730,62 +746,60 @@ public class WordlistFrameController implements IController
      */
     public void tryExportList()
     {
-        JFileChooser chooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                "GlosTrainer list files", "gtl");
-        chooser.setFileFilter(filter);
-        while (true)
+        SwingUtilities.invokeLater(() ->
         {
-            try
+
+            while (true)
             {
-                int saveFileResult = chooser.showSaveDialog(view.getFrame());
-                if (saveFileResult == JFileChooser.APPROVE_OPTION)
+                try
                 {
-                    File fileToBeSaved = chooser.getSelectedFile();
-
-                    // see if we need to append .gtl
-                    if (!chooser.getSelectedFile().getAbsolutePath().endsWith(".gtl"))
+                    int saveFileResult = chooser.showSaveDialog(view.getFrame());
+                    if (saveFileResult == JFileChooser.APPROVE_OPTION)
                     {
-                        fileToBeSaved = new File(chooser.getSelectedFile() + ".gtl");
-                    }
+                        File fileToBeSaved = chooser.getSelectedFile();
 
-                    // ask for confirmation to overwrite
-                    if (fileToBeSaved.exists())
-                    {
-                        int overWriteResult = JOptionPane.showConfirmDialog(view.getFrame(),
-                                String.format("<html>A file with the name %s exists already.<br/>Do you wish to overwrite it?", fileToBeSaved.getName()),
-                                "Overwrite",
-                                JOptionPane.YES_NO_OPTION,
-                                JOptionPane.WARNING_MESSAGE);
-                        if (overWriteResult == JOptionPane.YES_OPTION)
+                        // see if we need to append .gtl
+                        if (!chooser.getSelectedFile().getAbsolutePath().endsWith(".gtl"))
+                        {
+                            fileToBeSaved = new File(chooser.getSelectedFile() + ".gtl");
+                        }
+
+                        // ask for confirmation to overwrite
+                        if (fileToBeSaved.exists())
+                        {
+                            int overWriteResult = JOptionPane.showConfirmDialog(view.getFrame(),
+                                    String.format("<html>A file with the name %s exists already.<br/>Do you wish to overwrite it?", fileToBeSaved.getName()),
+                                    "Overwrite",
+                                    JOptionPane.YES_NO_OPTION,
+                                    JOptionPane.WARNING_MESSAGE);
+                            if (overWriteResult == JOptionPane.YES_OPTION)
+                            {
+                                model.saveToFile(fileToBeSaved);
+                                break;
+                            } else
+                            {
+                                chooser.setVisible(true);
+                            }
+                        } else // no overwriting
                         {
                             model.saveToFile(fileToBeSaved);
                             break;
-                        } else
-                        {
-                            chooser.setVisible(true);
                         }
-                    } else // no overwriting
+                    } else // user has chosen cancel
                     {
-                        model.saveToFile(fileToBeSaved);
                         break;
                     }
-                } else // user has chosen cancel
+                } catch (IOException ex)
                 {
-                    break;
+                    JOptionPane.showMessageDialog(view.getFrame(),
+                            "Couldn't save the file. The destination folder might be full or you don't have write access.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    Logger.getLogger(WordlistFrameController.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } catch (IOException ex)
-            {
-                JOptionPane.showMessageDialog(view.getFrame(),
-                        "Couldn't save the file. The destination folder might be full or you don't have write access.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                Logger
-                        .getLogger(WordlistFrameController.class
-                                .getName()).log(Level.SEVERE, null, ex);
-            }
 
-        }
+            }
+        });
     }
 
     /**

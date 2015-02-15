@@ -16,13 +16,12 @@ import java.util.Arrays;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
-import javax.swing.Action;
 import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
@@ -34,14 +33,17 @@ import javax.swing.table.TableModel;
  *
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
-public class QuizWordlistController implements IController
+public class QuizWordlistController extends AbstractController
 {
-
+        
     private QuizWordlistModel model;
     private QuizWordlistPanel view;
 
-    public QuizWordlistController(QuizWordlistModel model, QuizWordlistPanel view)
+    public QuizWordlistController(MainController mainController, 
+            QuizWordlistModel model, 
+            QuizWordlistPanel view)
     {
+        super(mainController, model, view);
         this.model = model;
         this.view = view;
         SwingUtilities.invokeLater(() ->
@@ -384,7 +386,7 @@ public class QuizWordlistController implements IController
             }
         }
         String[] resultArray = resultList.toArray(new String[resultList.size()]);
-        System.out.println(Arrays.toString(resultArray));
+        System.out.println("Starting quiz with " + Arrays.toString(resultArray));
         return resultArray;
     }
 
@@ -399,7 +401,12 @@ public class QuizWordlistController implements IController
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            getSelectedWordFormsAsArray();
+            String[] words = getSelectedWordFormsAsArray();
+            if (words.length < 5)
+                JOptionPane.showMessageDialog(getMainController().getWordlistController().getView().getFrame(), 
+                        "Please select at least 5 words to include for the quiz.", 
+                        "Too few words selected", 
+                        JOptionPane.ERROR_MESSAGE);
         }
 
     }

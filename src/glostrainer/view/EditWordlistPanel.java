@@ -21,8 +21,12 @@ public class EditWordlistPanel extends JPanel
 
     public EditWordlistPanel()
     {
-        initComponents();
-        initLayout();
+        SwingUtilities.invokeLater(() ->
+        {
+            initComponents();
+            initLayout();
+        });
+
     }
 
     private void initComponents()

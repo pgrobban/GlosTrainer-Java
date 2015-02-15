@@ -28,21 +28,19 @@ import javax.swing.SwingUtilities;
  *
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
-public class NewOrEditEntryFormController implements IController
+public class NewOrEditEntryFormController extends AbstractController
 {
-
-    private MainController mainController;
 
     /**
      * The model here represents the entered data from the GUI's JTextFiedls
      * (and JComboBox for the word class etc).
      */
-    private final NewOrEditEntryModel model;
+    private NewOrEditEntryModel model;
     /**
      * The view contains a reference to a modal JDialog, which will be used for
      * the user to enter and display data.
      */
-    private final NewOrEditEntryForm view;
+    private NewOrEditEntryForm view;
     /**
      * Sets a flag to determine if the word entry was saved, e.g. when the user
      * has clicked the OK button. Use this flag to determine wether to update
@@ -60,7 +58,7 @@ public class NewOrEditEntryFormController implements IController
     public NewOrEditEntryFormController(MainController mainController,
             NewOrEditEntryModel model, NewOrEditEntryForm view)
     {
-        this.mainController = mainController;
+        super(mainController, model, view);
         this.model = model;
         this.view = view;
         SwingUtilities.invokeLater(() ->
