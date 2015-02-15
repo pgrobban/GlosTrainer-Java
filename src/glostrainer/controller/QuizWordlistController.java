@@ -33,6 +33,7 @@ import javax.swing.table.TableModel;
  *
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
+//TODO:refactoring and comment
 public class QuizWordlistController extends AbstractController
 {
         
@@ -403,7 +404,7 @@ public class QuizWordlistController extends AbstractController
         {
             String[] words = getSelectedWordFormsAsArray();
             if (words.length < 5)
-                JOptionPane.showMessageDialog(getMainController().getWordlistController().getView().getFrame(), 
+                JOptionPane.showMessageDialog(getMainController().getAppFrameController().getView().getFrame(), 
                         "Please select at least 5 words to include for the quiz.", 
                         "Too few words selected", 
                         JOptionPane.ERROR_MESSAGE);

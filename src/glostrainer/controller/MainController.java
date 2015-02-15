@@ -17,7 +17,7 @@ import javax.swing.SwingUtilities;
 public class MainController
 {
 
-    private final WordlistFrameController wordlistController;
+    private final AppFrameController appFrameController;
 
     private final NewOrEditEntryFormController newOrEditEntryFormController;
 
@@ -26,28 +26,30 @@ public class MainController
     public MainController()
     {
 
-        this.wordlistController = new WordlistFrameController(
-                this,
-                new WordlistModel(),
-                new GUIFrame());
+        WordlistModel wlModel = new WordlistModel();
+        GUIFrame gui = new GUIFrame();
+
+        this.appFrameController = new AppFrameController(this, wlModel, gui);
+
         this.quizWordlistController = new QuizWordlistController(
                 this,
-                new QuizWordlistModel(this.wordlistController.getModel()),
+                new QuizWordlistModel(wlModel),
                 new QuizWordlistPanel());
+
         this.newOrEditEntryFormController = new NewOrEditEntryFormController(
                 this,
                 new NewOrEditEntryModel(),
-                new NewOrEditEntryForm(this.wordlistController.getView().getFrame())
+                new NewOrEditEntryForm(gui.getFrame())
         );
 
     }
 
     /**
-     * @return the wordlistController
+     * @return the appFrameController
      */
-    public WordlistFrameController getWordlistController()
+    public AppFrameController getAppFrameController()
     {
-        return wordlistController;
+        return appFrameController;
     }
 
     /**

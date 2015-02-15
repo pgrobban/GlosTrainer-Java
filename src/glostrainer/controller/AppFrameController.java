@@ -48,8 +48,8 @@ import javax.swing.table.TableRowSorter;
  * user and the application. This class represents the main controller for the
  * application. It manages a GUI, which here is an instance of a
  * <code>GUIFrame</code>, and a word list model class,
- * <code>WordlistModel</code>. The <code>WordlistFrameController</code> responds
- * to GUI events such as button clicks and key presses, and reacts accordingly.
+ * <code>WordlistModel</code>. The <code>AppFrameController</code> responds to
+ * GUI events such as button clicks and key presses, and reacts accordingly.
  * Since the table view in the GUI cannot be manipulated directly, the
  * <code>WordListFrameController</code> class manages a
  * <code>NewOrEditEntryFormController</code> instance to show dialogs for the
@@ -57,7 +57,7 @@ import javax.swing.table.TableRowSorter;
  *
  * @author Robert Sebescen (pgrobban at gmail dot com)
  */
-public class WordlistFrameController implements IController
+public class AppFrameController implements IController
 {
 
     private MainController mainController;
@@ -83,14 +83,14 @@ public class WordlistFrameController implements IController
      * @param model
      * @param view
      */
-    public WordlistFrameController(MainController mainController, WordlistModel model, GUIFrame view)
+    public AppFrameController(MainController mainController, WordlistModel model, GUIFrame view)
     {
         this.mainController = mainController;
         this.model = model;
         this.view = view;
 
         chooser = new JFileChooser();
-
+        setupViewEvents();
     }
 
     @Override
@@ -179,7 +179,7 @@ public class WordlistFrameController implements IController
         } catch (ParseException ex)
         {
             // shouldn't happen
-            Logger.getLogger(WordlistFrameController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AppFrameController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -385,14 +385,18 @@ public class WordlistFrameController implements IController
             @Override
             public void windowClosing(WindowEvent e)
             {
-                int result = JOptionPane.showConfirmDialog(view.getFrame(),
-                        "Do you really want to close the application? All unsaved changes will be lost.",
-                        "Exit",
-                        JOptionPane.WARNING_MESSAGE);
-                if (result == JOptionPane.YES_OPTION)
+                SwingUtilities.invokeLater(() ->
                 {
-                    System.exit(0);
-                }
+                    int result = JOptionPane.showConfirmDialog(view.getFrame(),
+                            "Do you really want to close the application? All unsaved changes will be lost.",
+                            "Exit",
+                            JOptionPane.WARNING_MESSAGE);
+                    if (result == JOptionPane.YES_OPTION)
+                    {
+                        System.exit(0);
+                    }
+                });
+
             }
         });
     }
@@ -670,7 +674,7 @@ public class WordlistFrameController implements IController
             } catch (IOException | ClassNotFoundException ex) // we didn't get a valid file
             {
                 JOptionPane.showMessageDialog(view.getFrame(), "Something went wrong when loading the file.", "Error", JOptionPane.ERROR_MESSAGE);
-                Logger.getLogger(WordlistFrameController.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AppFrameController.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
 
@@ -793,7 +797,7 @@ public class WordlistFrameController implements IController
                             "Couldn't save the file. The destination folder might be full or you don't have write access.",
                             "Error",
                             JOptionPane.ERROR_MESSAGE);
-                    Logger.getLogger(WordlistFrameController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(AppFrameController.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
             }
@@ -972,8 +976,8 @@ public class WordlistFrameController implements IController
                 view.getEditWordlistTab().getWordlistTable().print(PrintMode.FIT_WIDTH);
             } catch (PrinterException ex)
             {
-                JOptionPane.showMessageDialog(view.getFrame(), "<html>Something went wrong while printing. Give this message to Robban:<br/>" + ex + "</html>");
-                Logger.getLogger(WordlistFrameController.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(view.getFrame(), "<html>Something went wrong while printing. The returned error was:<br/>" + ex + "</html>");
+                Logger.getLogger(AppFrameController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

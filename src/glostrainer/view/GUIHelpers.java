@@ -50,13 +50,17 @@ public class GUIHelpers
      */
     public static ImageIcon getIconFromFileName(String fileName)
     {
-        /*
-         Currently the only way I found that works consistently across platforms.
-         Put the images into the images.jar file and add it as a source library
-         to the NetBeans project.
-         */
-        URL iconUrl = GUIHelpers.class.getClass().getResource("/" + fileName);
-        return new ImageIcon(Toolkit.getDefaultToolkit().getImage(iconUrl));
+          
+        URL imgURL = ClassLoader.getSystemResource("images/" + fileName);
+        if (imgURL != null)
+        {
+            return new ImageIcon(imgURL);
+        } else
+        {
+            System.err.println("Couldn't find file: " + fileName);
+            return null;
+        }
+    
     }
 
     /**
