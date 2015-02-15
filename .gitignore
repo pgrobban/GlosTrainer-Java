@@ -2,3 +2,5 @@ build/*
 dist/*
 manifest.mf
 nbproject/private/private.xml
+images.jar
+
